@@ -1,9 +1,11 @@
+package Game;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class Chess extends JPanel {
-    static StopMenu stopMenu;
-    static boolean stopMenuShown = false;
+    public static StopMenu stopMenu;
+    public static boolean stopMenuShown = false;
 
     public Chess() {
         setBackground(Color.RED);

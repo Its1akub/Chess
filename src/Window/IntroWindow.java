@@ -1,3 +1,5 @@
+package Window;
+
 import javax.swing.*;
 import java.awt.*;
 

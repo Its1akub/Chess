@@ -1,3 +1,10 @@
+package Window;
+
+import Game.Chess;
+import Game.ServerClientMode.ClientPanel;
+import Game.ServerClientMode.ServerPanel;
+import Other.EscapeKeyAdapter;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -8,6 +15,7 @@ public class GameWindow extends JFrame {
     SelectingGame selectingGame = new SelectingGame();
     Chess chess = new Chess();
     ServerPanel server;
+    ClientPanel clientPanel;
 
     JButton exitButton;
     private JPanel currentPanel;
@@ -15,10 +23,11 @@ public class GameWindow extends JFrame {
     public GameWindow() {
         exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> System.exit(0));
-        setTitle("Chess");
+        setTitle("Game.Chess");
         getContentPane().add(exitButton);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setUndecorated(true);
+        //setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //setUndecorated(true);
+        setSize(400,400);
 
         setFocusable(true);
         requestFocusInWindow();
@@ -28,14 +37,17 @@ public class GameWindow extends JFrame {
         escapeKeyAdapter.getStopMenuShown(Chess.stopMenuShown);
 
         currentPanel = introWindow;
+
         introWindow.playButton.addActionListener(e -> switchToPanel(selectingGame));
-        selectingGame.localButton.addActionListener(e -> {
+        selectingGame.localHostButton.addActionListener(e -> {
             try {
                 switchToPanel(server = new ServerPanel());
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
         });
+        selectingGame.localJoinButton.addActionListener(e -> switchToPanel(clientPanel = new ClientPanel()));
+
         add(introWindow, BorderLayout.CENTER);
         setVisible(true);
     }

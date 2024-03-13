@@ -1,3 +1,7 @@
+package Other;
+
+import Game.StopMenu;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 

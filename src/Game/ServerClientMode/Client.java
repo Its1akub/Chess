@@ -10,10 +10,15 @@ public class Client {
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
+    private boolean connected;
 
     public void startConnection(int port)  {
         try {
             clientSocket = new Socket("localhost", port);
+            if (clientSocket.isConnected()) {
+                connected = true;
+            }
+
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (IOException e) {
@@ -31,5 +36,9 @@ public class Client {
         in.close();
         out.close();
         clientSocket.close();
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 }

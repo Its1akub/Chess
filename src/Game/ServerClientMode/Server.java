@@ -13,6 +13,7 @@ public class Server {
     private PrintWriter out;
     private BufferedReader in;
     private final int port;
+    private boolean connected;
 
     public Server() {
         try {
@@ -28,7 +29,9 @@ public class Server {
         new Thread(() -> {
             try {
                 clientSocket = serverSocket.accept();
-                System.out.println(clientSocket.isConnected());
+                if (clientSocket.isConnected()) {
+                    connected = true;
+                }
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String greeting = in.readLine();
@@ -53,5 +56,9 @@ public class Server {
 
     public int getPort() {
         return port;
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 }

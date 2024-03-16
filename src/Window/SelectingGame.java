@@ -1,5 +1,7 @@
 package Window;
 
+import Other.ChessPieces.Bishop;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,6 +13,9 @@ public class SelectingGame extends JPanel {
         add(localHostButton, BorderLayout.CENTER);
         localJoinButton = new JButton("Local join");
         add(localJoinButton, BorderLayout.SOUTH);
+        Bishop b = new Bishop(0,0,true,"/src/main/resources/bw.png");
+
+
     }
 
 

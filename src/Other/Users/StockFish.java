@@ -11,7 +11,7 @@ public class StockFish {
 
     public StockFish() {
         try {
-            engineProcess = Runtime.getRuntime().exec("/src/main/resources/stockfish/stockfish-windows-x86-64-avx2.exe");
+            engineProcess = Runtime.getRuntime().exec("src/main/resources/stockfish/stockfish-windows-x86-64-avx2.exe");
             processReader = new BufferedReader(new InputStreamReader(engineProcess.getInputStream()));
             processWriter = new OutputStreamWriter(engineProcess.getOutputStream());
             // Initialize Stockfish engine

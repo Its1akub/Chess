@@ -1,7 +1,8 @@
 package Other.ChessPieces;
 
 public class Bishop extends Piece{
-    public Bishop(int x, int y, boolean isWhite, String path) {
-        super(x, y, isWhite, PieceType.BISHOP, path);
+    private String path;
+    public Bishop(int x, int y, boolean isWhite) {
+        super(x, y, isWhite, PieceType.BISHOP);
     }
 }

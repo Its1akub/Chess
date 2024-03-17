@@ -13,7 +13,7 @@ public class GameWindow extends JFrame {
     IntroWindow introWindow = new IntroWindow();
     EscapeKeyAdapter escapeKeyAdapter = new EscapeKeyAdapter();
     SelectingGame selectingGame = new SelectingGame();
-    Chess chess = new Chess();
+    Chess chess;
     ServerPanel server;
     ClientPanel clientPanel;
 

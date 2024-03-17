@@ -1,26 +1,29 @@
 package Other.ChessPieces;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
-import java.io.BufferedReader;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public abstract class Piece extends JPanel {
+
+public abstract class Piece{
+
 
     private int x;
     private int y;
     private boolean isWhite;
     private PieceType type;
-    private Image image;
+    private BufferedImage image;
 
-    public Piece(int x, int y, boolean isWhite, PieceType type, String path) {
+
+
+    public Piece(int x, int y, boolean isWhite, PieceType type) {
         setX(x);
         setY(y);
         setWhite(isWhite);
         setType(type);
-        setImage(path);
+        setImage(computeImagePath());
+
     }
 
     public int getX() {
@@ -55,19 +58,27 @@ public abstract class Piece extends JPanel {
         this.type = type;
     }
 
-    public Image getImage() {
+    public BufferedImage getImage() {
         return image;
     }
 
     public void setImage(String path) {
-        image = new ImageIcon(path).getImage();
-        setPreferredSize(new Dimension(image.getWidth(null), image.getHeight(null)));
-
+        try {
+            image = ImageIO.read(new File(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.drawImage(getImage(), getX() * 100, getY() * 100, 100, 100, null);
+    private String computeImagePath() {
+        String colorSuffix = isWhite ? "w" : "b";
+        String typePrefix;
+        if (type == PieceType.KNIGHT){
+           typePrefix = String.valueOf(type.toString().toLowerCase().toCharArray()[1]);
+        }else {
+            typePrefix = String.valueOf(type.toString().toLowerCase().toCharArray()[0]);
+        }
+        return "src/main/resources/" + typePrefix + colorSuffix + ".png";
     }
 
 }

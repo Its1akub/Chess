@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.InputMismatchException;
 
 
 public abstract class Piece{
@@ -11,19 +12,19 @@ public abstract class Piece{
 
     private int x;
     private int y;
+    private int cX;
+    private int cY;
     private boolean isWhite;
     private PieceType type;
     private BufferedImage image;
+    private boolean hovering = false;
 
-
-
-    public Piece(int x, int y, boolean isWhite, PieceType type) {
-        setX(x);
-        setY(y);
+    public Piece(int cX, int cY, boolean isWhite, PieceType type) {
+        setcX(cX);
+        setcY(cY);
         setWhite(isWhite);
         setType(type);
         setImage(computeImagePath());
-
     }
 
     public int getX() {
@@ -40,6 +41,24 @@ public abstract class Piece{
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public int getcX() {
+        return cX;
+    }
+
+    public void setcX(int cX) {
+        if (cX < 0 || cX > 7) throw new InputMismatchException();
+        this.cX = cX;
+    }
+
+    public int getcY() {
+        return cY;
+    }
+
+    public void setcY(int cY) {
+        if (cY < 0 || cY > 7) throw new InputMismatchException();
+        this.cY = cY;
     }
 
     public boolean isWhite() {
@@ -62,6 +81,13 @@ public abstract class Piece{
         return image;
     }
 
+    public boolean isHovering() {
+        return hovering;
+    }
+    public void setHovering(boolean hovering) {
+        this.hovering = hovering;
+    }
+
     public void setImage(String path) {
         try {
             image = ImageIO.read(new File(path));
@@ -74,7 +100,7 @@ public abstract class Piece{
         String colorSuffix = isWhite ? "w" : "b";
         String typePrefix;
         if (type == PieceType.KNIGHT){
-           typePrefix = String.valueOf(type.toString().toLowerCase().toCharArray()[1]);
+            typePrefix = String.valueOf(type.toString().toLowerCase().toCharArray()[1]);
         }else {
             typePrefix = String.valueOf(type.toString().toLowerCase().toCharArray()[0]);
         }
@@ -82,3 +108,5 @@ public abstract class Piece{
     }
 
 }
+
+

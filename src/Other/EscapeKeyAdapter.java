@@ -13,18 +13,14 @@ public class EscapeKeyAdapter extends KeyAdapter {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             stopMenuShown = !stopMenuShown;
             stopMenu.setVisible(stopMenuShown);
-            System.out.println(e.getKeyChar());
             stopMenu.revalidate();
             stopMenu.repaint();
 
         }
     }
-    public void getStopMenu(StopMenu stopMenu) {
+    public void getStopMenu(StopMenu stopMenu, boolean stopMenuShown) {
         this.stopMenu = stopMenu;
-    }
-
-    public void getStopMenuShown(boolean stopMenuShown) {
-       this.stopMenuShown = stopMenuShown;
+        this.stopMenuShown = stopMenuShown;
     }
 
 

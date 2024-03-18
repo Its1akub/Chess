@@ -1,27 +1,34 @@
 package Game;
 
-import Other.ChessPieces.Bishop;
-import Other.ChessPieces.King;
+import Game.ServerClientMode.ChessBoard;
+import Other.Users.Player;
 
 import javax.swing.*;
 import java.awt.*;
 
+
 public class Chess extends JPanel {
     public static StopMenu stopMenu;
     public static boolean stopMenuShown = false;
-    Bishop b;
-    King k;
+    private Player p1;
+    private Player p2;
 
-    public Chess() {
-        setBackground(Color.RED);
-        stopMenu = new StopMenu();
+
+    public Chess(int width, int height) {
+        setPreferredSize(new Dimension(width, height));
+        setLayout(new BorderLayout());
+        stopMenu = new StopMenu(width, height);
         stopMenu.setVisible(false);
-        add(stopMenu, BorderLayout.CENTER);
-        this.b = new Bishop(100,100,true);
-        this.k = new King(200,200,true);
+        add(stopMenu);
+
+        ChessBoard chessBoard = new ChessBoard(width, height);
+        add(chessBoard,BorderLayout.CENTER);
+
+
 
     }
-
-
-
+    public void setPlayers(Player p1, Player p2) {
+        this.p1 = p1;
+        this.p2 = p2;
+    }
 }

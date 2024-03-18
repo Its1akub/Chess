@@ -13,7 +13,7 @@ public class GameWindow extends JFrame {
     IntroWindow introWindow = new IntroWindow();
     EscapeKeyAdapter escapeKeyAdapter = new EscapeKeyAdapter();
     SelectingGame selectingGame = new SelectingGame();
-    Chess chess;
+    Chess chess ;
     ServerPanel server;
     ClientPanel clientPanel;
 
@@ -23,22 +23,26 @@ public class GameWindow extends JFrame {
     public GameWindow() {
         exitButton = new JButton("Exit");
         exitButton.addActionListener(e -> System.exit(0));
-        setTitle("Game.Chess");
+        setTitle("Chess");
         getContentPane().add(exitButton);
-        //setExtendedState(JFrame.MAXIMIZED_BOTH);
-        //setUndecorated(true);
-        setSize(400,400);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setUndecorated(true);
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        System.out.println( screenSize.getWidth() + ", " + screenSize.getHeight());
+        chess = new Chess((int) screenSize.getWidth(), (int) screenSize.getHeight());
+
 
         setFocusable(true);
         requestFocusInWindow();
         addKeyListener(escapeKeyAdapter);
 
-        escapeKeyAdapter.getStopMenu(Chess.stopMenu);
-        escapeKeyAdapter.getStopMenuShown(Chess.stopMenuShown);
+        escapeKeyAdapter.getStopMenu(Chess.stopMenu,Chess.stopMenuShown);
 
         currentPanel = introWindow;
 
-        introWindow.playButton.addActionListener(e -> switchToPanel(selectingGame));
+        introWindow.playButton.addActionListener(e -> switchToPanel(chess));
         selectingGame.localHostButton.addActionListener(e -> {
             try {
                 switchToPanel(server = new ServerPanel());

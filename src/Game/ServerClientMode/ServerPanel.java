@@ -16,7 +16,7 @@ public class ServerPanel extends JPanel {
 
         server = new Server();
         int port = server.getPort();
-        Label serverPort = new Label("Game.ServerClientMode.Server Port: " + port);
+        Label serverPort = new Label("Server Port: " + port);
         System.out.println(port);
         Label waitingForClient = new Label("Waiting for client...");
         add(serverPort, BorderLayout.NORTH);

@@ -1,19 +1,23 @@
 package Game.ServerClientMode;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import Game.Chess;
+import Other.Users.Player;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.http.WebSocket;
 
 public class Server {
     private final ServerSocket serverSocket;
     private Socket clientSocket;
-    private PrintWriter out;
-    private BufferedReader in;
     private final int port;
-    private boolean connected;
+    ObjectInputStream ois;
+    private InputStream is;
+    private Player pHost, pGuest;
+    private boolean runChess;
 
     public Server() {
         try {
@@ -22,34 +26,36 @@ public class Server {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
+        //this.chess = chess;
     }
 
-    public void start() {
-        new Thread(() -> {
-            try {
-                clientSocket = serverSocket.accept();
-                if (clientSocket.isConnected()) {
-                    connected = true;
-                }
-                out = new PrintWriter(clientSocket.getOutputStream(), true);
-                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                String greeting = in.readLine();
-                if ("hello server".equals(greeting)) {
-                    out.println("hello client");
-                } else {
-                    out.println("unrecognized greeting");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
 
+    public void start() throws IOException {
+
+
+        Object obj;
+        try {
+            clientSocket = serverSocket.accept();
+
+            System.out.println(clientSocket);
+            ois = new ObjectInputStream(clientSocket.getInputStream());
+            obj = ois.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            throw new RuntimeException(e);
+        }
+        while (true) {
+            if (obj instanceof Player) {
+                pGuest = (Player) obj;
+                pHost = new Player();
+                break;
+            }
+        }
+        runChess = true;
     }
 
     public void stop() throws IOException {
-        in.close();
-        out.close();
+        //in.close();
+        //out.close();
         clientSocket.close();
         serverSocket.close();
     }
@@ -58,7 +64,15 @@ public class Server {
         return port;
     }
 
-    public boolean isConnected() {
-        return connected;
+    public boolean isRunChess() {
+        return runChess;
+    }
+
+    public Player getpHost() {
+        return pHost;
+    }
+
+    public Player getpGuest() {
+        return pGuest;
     }
 }

@@ -1,5 +1,6 @@
 package Game.ServerClientMode;
 
+import Game.PiecesLoad;
 import Other.ChessPieces.*;
 
 import javax.swing.*;
@@ -10,11 +11,12 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 public class ChessBoard extends JPanel implements MouseMotionListener, MouseListener {
-    ArrayList<Piece> pieces = new ArrayList<>();
-    int hitbox = 50;
-    int hoverOverX;
-    int hoverOverY;
-    boolean someoneHover = false;
+    private ArrayList<Piece> pieces = new ArrayList<>();
+    private int hitbox = 50;
+    private int hoverOverX;
+    private int hoverOverY;
+    private boolean someoneHover = false;
+    //private String[][] board = new String[8][8];
 
     public ChessBoard(int width, int height) {
         setBounds(0, 0, width, height);
@@ -23,21 +25,25 @@ public class ChessBoard extends JPanel implements MouseMotionListener, MouseList
         setLayout(null);
         this.addMouseMotionListener(this);
         this.addMouseListener(this);
-        pieces.add(new Pawn(5, 7, false));
-        pieces.add(new Knight(5, 5, false));
-        pieces.add(new Bishop(1, 0, true));
-        pieces.add(new Rook(3, 3, true));
-        pieces.add(new Queen(4, 4, true));
-        pieces.add(new King(7, 7, true));
+        PiecesLoad piecesLoad = new PiecesLoad(true);
+        pieces = piecesLoad.getPieces();
         pieces = transformPiecesCo(pieces);
     }
 
+    public ArrayList<Piece> getPieces() {
+        return pieces;
+    }
+    public void setPieces(ArrayList<Piece> pieces) {
+        this.pieces = pieces;
+    }
+
+
     public int[] coordinatesToScreen(int cX, int cY) {
-        int xMoveBy = (getWidth() - hitbox * 16)/2;
-        int yMoveBy = (getHeight() - hitbox * 16)/2;
+        int xMoveBy = (getWidth() - hitbox * 16) / 2;
+        int yMoveBy = (getHeight() - hitbox * 16) / 2;
         return new int[]{
                 //cX * hitbox * 2 + xMoveBy - hitbox*2,cY * hitbox * 2 + yMoveBy - hitbox*2
-                xMoveBy + cX * hitbox*2+ hitbox, yMoveBy  + cY * hitbox*2+ hitbox
+                xMoveBy + cX * hitbox * 2 + hitbox, yMoveBy + cY * hitbox * 2 + hitbox
         };
     }
 
@@ -144,22 +150,6 @@ public class ChessBoard extends JPanel implements MouseMotionListener, MouseList
             }
         }
     }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
-
     @Override
     public void mouseReleased(MouseEvent e) {
         int xMoveBy = (getWidth() - hitbox * 16) / 2;
@@ -185,14 +175,11 @@ public class ChessBoard extends JPanel implements MouseMotionListener, MouseList
         }
         repaint();
     }
+    @Override public void mouseMoved(MouseEvent e) {}
+    @Override public void mouseClicked(MouseEvent e) {}
+    @Override public void mousePressed(MouseEvent e) {}
+    @Override public void mouseEntered(MouseEvent e) {}
+    @Override public void mouseExited(MouseEvent e) {}
 
-    @Override
-    public void mouseEntered(MouseEvent e) {
 
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
 }

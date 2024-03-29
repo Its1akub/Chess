@@ -13,50 +13,43 @@ public class GameWindow extends JFrame {
     IntroWindow introWindow = new IntroWindow();
     EscapeKeyAdapter escapeKeyAdapter = new EscapeKeyAdapter();
     SelectingGame selectingGame = new SelectingGame();
-    Chess chess ;
+    Chess chess;
     ServerPanel server;
     ClientPanel clientPanel;
 
     JButton exitButton;
-    private JPanel currentPanel;
+    private JPanel currentPanel = introWindow;
+    private int width, height;
 
     public GameWindow() {
         exitButton = new JButton("Exit");
-        exitButton.addActionListener(e -> System.exit(0));
-        setTitle("Chess");
-        getContentPane().add(exitButton);
+        setPreferredSize(new Dimension());
+        //getContentPane().add(exitButton);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setUndecorated(true);
-
+        //setUndecorated(true);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        System.out.println( screenSize.getWidth() + ", " + screenSize.getHeight());
-        chess = new Chess((int) screenSize.getWidth(), (int) screenSize.getHeight());
-
+        if (isUndecorated()) {
+            width = (int) screenSize.getWidth();
+            height = (int) screenSize.getHeight();
+        }else{
+            Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(this.getGraphicsConfiguration());
+            width = (int) screenSize.getWidth();
+            height = (int) screenSize.getHeight()-20 - insets.bottom;
+        }
+        System.out.println(width + " " + height);
 
         setFocusable(true);
         requestFocusInWindow();
         addKeyListener(escapeKeyAdapter);
-
-        escapeKeyAdapter.getStopMenu(Chess.stopMenu,Chess.stopMenuShown);
-
-        currentPanel = introWindow;
-
-        introWindow.playButton.addActionListener(e -> switchToPanel(chess));
-        selectingGame.localHostButton.addActionListener(e -> {
-            try {
-                switchToPanel(server = new ServerPanel());
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-        selectingGame.localJoinButton.addActionListener(e -> switchToPanel(clientPanel = new ClientPanel()));
-
         add(introWindow, BorderLayout.CENTER);
         setVisible(true);
+        escapeKeyAdapter.getStopMenu(Chess.stopMenu, Chess.stopMenuShown);
+        setButtons();
+
     }
 
-    private void switchToPanel(JPanel newPanel) {
+    public void switchToPanel(JPanel newPanel) {
         if (currentPanel != null) {
             remove(currentPanel);
         }
@@ -64,5 +57,12 @@ public class GameWindow extends JFrame {
         add(currentPanel, BorderLayout.CENTER);
         revalidate();
         repaint();
+    }
+
+    private void setButtons() {
+        exitButton.addActionListener(e -> System.exit(0));
+        introWindow.playButton.addActionListener(e -> switchToPanel(selectingGame));
+        selectingGame.localHostButton.addActionListener(e -> switchToPanel(server = new ServerPanel(width, height)));
+        selectingGame.localJoinButton.addActionListener(e -> switchToPanel(clientPanel = new ClientPanel(width, height)));
     }
 }

@@ -10,6 +10,7 @@ import java.awt.*;
 public class Chess extends JPanel {
     public static StopMenu stopMenu;
     public static boolean stopMenuShown = false;
+    private ChessBoard chessBoard;
     private Player p1;
     private Player p2;
 
@@ -21,14 +22,11 @@ public class Chess extends JPanel {
         stopMenu.setVisible(false);
         add(stopMenu);
 
-        ChessBoard chessBoard = new ChessBoard(width, height);
+        chessBoard = new ChessBoard(width, height);
+
         add(chessBoard,BorderLayout.CENTER);
 
 
 
-    }
-    public void setPlayers(Player p1, Player p2) {
-        this.p1 = p1;
-        this.p2 = p2;
     }
 }

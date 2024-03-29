@@ -1,29 +1,45 @@
 package Game.ServerClientMode;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import Game.Chess;
+import Other.Users.Player;
+
+import java.io.*;
 import java.net.Socket;
 
 public class Client {
     private Socket clientSocket;
     private PrintWriter out;
+    private ObjectOutputStream oos;
+    private ObjectInputStream ois;
     private BufferedReader in;
-    private boolean connected;
 
-    public void startConnection(int port)  {
+    private Player player;
+    private int port;
+    private boolean runChess;
+
+    public Client( int port) {
+        this.port = port;
         try {
             clientSocket = new Socket("localhost", port);
-            if (clientSocket.isConnected()) {
-                connected = true;
-            }
-
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        //this.chess = chess;
+    }
+
+
+    public void connect() {
+            try {
+                oos = new ObjectOutputStream(clientSocket.getOutputStream());
+                player = new Player();
+                oos.writeObject(player);
+                //chess.setVisible(true);
+                runChess = true;
+                //out = new PrintWriter(clientSocket.getOutputStream(), true);
+                //in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
     }
 
     public String sendMessage(String msg) throws IOException {
@@ -38,7 +54,7 @@ public class Client {
         clientSocket.close();
     }
 
-    public boolean isConnected() {
-        return connected;
+    public boolean isRunChess() {
+        return runChess;
     }
 }

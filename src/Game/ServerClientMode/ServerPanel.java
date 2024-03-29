@@ -1,30 +1,56 @@
 package Game.ServerClientMode;
 
+import Game.Chess;
+import Game.PiecesLoad;
 import Game.ServerClientMode.Server;
+import Other.ChessPieces.Piece;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class ServerPanel extends JPanel {
-    Server server;
-
-    public ServerPanel() throws IOException {
+    //private Server server;
+    private ArrayList<Piece> pieces = new ArrayList<>();
+    private Chess chess;
+    private RunnableServer runnableServer;
+    Label serverPort;
+    Label waitingForClient;
+    public ServerPanel(int width, int height) {
         setBackground(Color.YELLOW);
         setLayout(new BorderLayout());
+        chess = new Chess(width, height);
+        add(chess, BorderLayout.CENTER);
+        chess.setVisible(false);
+        runnableServer = new RunnableServer();
+        Thread thread = new Thread(runnableServer);
 
-        server = new Server();
-        int port = server.getPort();
-        Label serverPort = new Label("Server Port: " + port);
+        thread.start();
+        int port = runnableServer.getServer().getPort();
+
+
+        //server = new Server();
+        //int port = server.getPort();
+         serverPort = new Label("Server Port: " + port);
         System.out.println(port);
-        Label waitingForClient = new Label("Waiting for client...");
+         waitingForClient = new Label("Waiting for client...");
         add(serverPort, BorderLayout.NORTH);
         add(waitingForClient, BorderLayout.SOUTH);
-        revalidate();
-        repaint();
 
-        server.start();
+        Timer timer = new Timer(2500,null);
+        timer.addActionListener(e -> {
+            if (runnableServer != null && runnableServer.getServer() != null && runnableServer.getServer().isRunChess()) {
 
+                remove(serverPort);
+                remove(waitingForClient);
+                chess.setVisible(true);
+                revalidate();
+                repaint();
+                timer.stop();
+            }
+        });
+        timer.start();
     }
 }

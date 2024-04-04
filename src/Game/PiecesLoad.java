@@ -42,8 +42,8 @@ public class PiecesLoad {
             pieces.add(new Pawn(6,1,false));
             pieces.add(new Pawn(7,1,false));
         }else {
-            pieces.add(new King(4,0,true));
-            pieces.add(new Queen(3,0,true));
+            pieces.add(new King(3,0,true));
+            pieces.add(new Queen(4,0,true));
             pieces.add(new Rook(0,0,true));
             pieces.add(new Rook(7,0,true));
             pieces.add(new Bishop(2,0,true));
@@ -59,8 +59,8 @@ public class PiecesLoad {
             pieces.add(new Pawn(6,1,true));
             pieces.add(new Pawn(7,1,true));
             //black
-            pieces.add(new King(4,7,false));
-            pieces.add(new Queen(3,7,false));
+            pieces.add(new King(3,7,false));
+            pieces.add(new Queen(4,7,false));
             pieces.add(new Rook(0,7,false));
             pieces.add(new Rook(7,7,false));
             pieces.add(new Bishop(2,7,false));

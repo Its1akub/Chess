@@ -1,9 +1,12 @@
 package Other.ChessPieces;
 
+import Other.Coordinates;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 
 
@@ -107,6 +110,7 @@ public abstract class Piece{
         return "src/main/resources/" + typePrefix + colorSuffix + ".png";
     }
 
+    public abstract ArrayList<Coordinates> allowedMovements(String[][] board, boolean isWhite);
 }
 
 

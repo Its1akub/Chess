@@ -1,6 +1,5 @@
 package Game.ServerClientMode;
 
-import Game.Chess;
 import Other.Users.Player;
 
 import java.io.*;
@@ -13,31 +12,27 @@ public class Client {
     private ObjectInputStream ois;
     private BufferedReader in;
 
-    private Player player;
-    private int port;
+    private Player pGuest, pHost;
     private boolean runChess;
 
     public Client( int port) {
-        this.port = port;
         try {
             clientSocket = new Socket("localhost", port);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        //this.chess = chess;
     }
-
 
     public void connect() {
             try {
                 oos = new ObjectOutputStream(clientSocket.getOutputStream());
-                player = new Player();
-                oos.writeObject(player);
-                //chess.setVisible(true);
+                ois = new ObjectInputStream(clientSocket.getInputStream());
+                pGuest = (Player) ois.readObject();
+                pHost = (Player) ois.readObject();
                 runChess = true;
                 //out = new PrintWriter(clientSocket.getOutputStream(), true);
                 //in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
     }
@@ -56,5 +51,9 @@ public class Client {
 
     public boolean isRunChess() {
         return runChess;
+    }
+
+    public Player getpHost() {
+        return pHost;
     }
 }

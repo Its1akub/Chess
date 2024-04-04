@@ -1,6 +1,7 @@
 package Game.ServerClientMode;
 
 import Game.Chess;
+import Game.Mechanics;
 import Other.Users.Player;
 
 import javax.swing.*;
@@ -9,12 +10,14 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.http.WebSocket;
+import java.util.ArrayList;
 
 public class Server {
     private final ServerSocket serverSocket;
     private Socket clientSocket;
     private final int port;
-    ObjectInputStream ois;
+    private ObjectInputStream ois;
+    private ObjectOutputStream oos;
     private InputStream is;
     private Player pHost, pGuest;
     private boolean runChess;
@@ -31,24 +34,20 @@ public class Server {
 
 
     public void start() throws IOException {
-
-
-        Object obj;
         try {
             clientSocket = serverSocket.accept();
-
             System.out.println(clientSocket);
+
             ois = new ObjectInputStream(clientSocket.getInputStream());
-            obj = ois.readObject();
-        } catch (ClassNotFoundException | IOException e) {
+            oos = new ObjectOutputStream(clientSocket.getOutputStream());
+            ArrayList<Player> colors = Mechanics.setColorsOfPlayers();
+            pHost = colors.get(0);
+            pGuest = colors.get(1);
+            oos.writeObject(pGuest);
+            oos.writeObject(pHost);
+
+        } catch ( IOException e) {
             throw new RuntimeException(e);
-        }
-        while (true) {
-            if (obj instanceof Player) {
-                pGuest = (Player) obj;
-                pHost = new Player();
-                break;
-            }
         }
         runChess = true;
     }
@@ -72,7 +71,6 @@ public class Server {
         return pHost;
     }
 
-    public Player getpGuest() {
-        return pGuest;
-    }
+
+
 }

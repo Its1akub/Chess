@@ -1,9 +1,11 @@
 package Game.ServerClientMode;
 
 import Game.Chess;
+import Game.Mechanics;
 import Game.PiecesLoad;
 import Game.ServerClientMode.Server;
 import Other.ChessPieces.Piece;
+import Other.Users.ColorSide;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,9 +23,7 @@ public class ServerPanel extends JPanel {
     public ServerPanel(int width, int height) {
         setBackground(Color.YELLOW);
         setLayout(new BorderLayout());
-        chess = new Chess(width, height);
-        add(chess, BorderLayout.CENTER);
-        chess.setVisible(false);
+
         runnableServer = new RunnableServer();
         Thread thread = new Thread(runnableServer);
 
@@ -45,6 +45,8 @@ public class ServerPanel extends JPanel {
 
                 remove(serverPort);
                 remove(waitingForClient);
+                chess = new Chess(width, height,runnableServer.getServer().getpHost().getColor() == ColorSide.WHITE);
+                add(chess, BorderLayout.CENTER);
                 chess.setVisible(true);
                 revalidate();
                 repaint();
@@ -52,5 +54,6 @@ public class ServerPanel extends JPanel {
             }
         });
         timer.start();
+
     }
 }

@@ -2,6 +2,7 @@ package Game.ServerClientMode;
 
 import Game.Chess;
 import Other.ChessPieces.Piece;
+import Other.Users.ColorSide;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,9 +20,6 @@ public class ClientPanel extends JPanel {
     public ClientPanel(int width, int height) {
         setBackground(Color.GRAY);
         setLayout(new BorderLayout());
-        chess = new Chess(width, height);
-        add(chess, BorderLayout.CENTER);
-        chess.setVisible(false);
 
         portLabel = new JLabel("Enter port: ");
         add(portLabel, BorderLayout.NORTH);
@@ -53,6 +51,8 @@ public class ClientPanel extends JPanel {
                 remove(portLabel);
                 remove(portArea);
                 remove(connectButton);
+                chess = new Chess(width, height,runnableClient.getClient().getpHost().getColor() == ColorSide.BLACK);
+                add(chess, BorderLayout.CENTER);
                 chess.setVisible(true);
                 revalidate();
                 repaint();

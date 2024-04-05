@@ -1,8 +1,6 @@
 package Game;
 
-import Other.ChessPieces.Pawn;
-import Other.ChessPieces.Piece;
-import Other.ChessPieces.Queen;
+import Other.ChessPieces.*;
 import Other.Users.ColorSide;
 import Other.Users.Player;
 
@@ -112,4 +110,21 @@ public class Mechanics {
     }
 
     // public static Piece Castling
+
+    public static void addPieceAfterMove(ArrayList<Piece> pieces, Piece piece, int x, int y) {
+        if (piece instanceof Pawn) {
+            pieces.add(new Pawn(x, y, piece.isWhite()));
+        } else if (piece instanceof Knight) {
+            pieces.add(new Knight(x, y, piece.isWhite()));
+        } else if (piece instanceof Bishop) {
+            pieces.add(new Bishop(x, y, piece.isWhite()));
+        } else if (piece instanceof Rook) {
+            pieces.add(new Rook(x, y, piece.isWhite()));
+        } else if (piece instanceof Queen) {
+            pieces.add(new Queen(x, y, piece.isWhite()));
+        } else if (piece instanceof King) {
+            pieces.add(new King(x, y, piece.isWhite()));
+        }
+    }
+
 }

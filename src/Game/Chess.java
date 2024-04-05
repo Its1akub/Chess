@@ -1,10 +1,14 @@
 package Game;
 
 import Game.ServerClientMode.ChessBoard;
+import Other.ChessPieces.Pawn;
+import Other.ChessPieces.Piece;
 import Other.Users.Player;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 
 public class Chess extends JPanel {
@@ -18,12 +22,17 @@ public class Chess extends JPanel {
     public Chess(int width, int height,boolean isWhite) {
         setPreferredSize(new Dimension(width, height));
         setLayout(new BorderLayout());
-        stopMenu = new StopMenu(width, height);
+        /*stopMenu = new StopMenu(width, height);
         stopMenu.setVisible(false);
-        add(stopMenu);
+        add(stopMenu);*/
 
-        chessBoard = new ChessBoard(width, height, isWhite);
-
+        chessBoard = new ChessBoard(width, height, isWhite) {
+            @Override public void mouseMoved(MouseEvent e) {}
+            @Override public void mouseClicked(MouseEvent e) {}
+            @Override public void mousePressed(MouseEvent e) {}
+            @Override public void mouseEntered(MouseEvent e) {}
+            @Override public void mouseExited(MouseEvent e) {}
+        };
         add(chessBoard,BorderLayout.CENTER);
 
 

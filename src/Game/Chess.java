@@ -1,14 +1,10 @@
 package Game;
 
-import Game.ServerClientMode.ChessBoard;
-import Other.ChessPieces.Pawn;
-import Other.ChessPieces.Piece;
 import Other.Users.Player;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 
 public class Chess extends JPanel {

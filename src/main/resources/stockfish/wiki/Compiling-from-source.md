@@ -521,7 +521,7 @@ one of the three mentioned architectures later on in the MAKE command by giving 
 
 Furthermore you should be aware of the fact that Stockfish is just the chess engine.
 You cannot use it stand-alone, rather you need a host program, i.e. a Chess GUI that
-displays the chess board, takes your moves etc. on the one hand, and on the other hand
+displays the chess boardNotWorking, takes your moves etc. on the one hand, and on the other hand
 "talks" to the Stockfish chess engine so that it analyses the chess position in a game
 and calculates its moves or variations, and gives that back to the GUI for display.
 

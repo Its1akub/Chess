@@ -127,7 +127,7 @@ First, we need to understand how minimax search works. We will go with the vanil
 
 ### Minimax
 
-**Each player tries to maximize the score in their favor**. White wants the evaluation to be as positive as it can, and Black as negative as it can - we do this all the time when we play chess. Search works in a similar way - you explore your moves, explore the opponent's replies, assign a value called evaluation to each resulting board position (which is not precise but tries to be), and find a sequence where White plays some move that has the maximum evaluation for the best opponent's reply.
+**Each player tries to maximize the score in their favor**. White wants the evaluation to be as positive as it can, and Black as negative as it can - we do this all the time when we play chess. Search works in a similar way - you explore your moves, explore the opponent's replies, assign a value called evaluation to each resulting boardNotWorking position (which is not precise but tries to be), and find a sequence where White plays some move that has the maximum evaluation for the best opponent's reply.
 
 Then you search one ply (half-move) deeper - exploring your reply to the last opponent's replies. This process is called iterative deepening - you explore a position up to depth 1, then to depth 2, then to depth 3, and so on - you deepen your search with each iteration and this is why it is called this way.
 

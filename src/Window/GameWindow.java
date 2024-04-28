@@ -1,19 +1,22 @@
 package Window;
 
 import Game.Chess;
+import Game.MyAIModeNotWorking.RunMyAINotWorking;
 import Game.ServerClientMode.ClientPanel;
 import Game.ServerClientMode.ServerPanel;
+import Game.StockFishMode.StockFishPanel;
+import Game.StockFishMode.Stockfish;
 import Other.EscapeKeyAdapter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 public class GameWindow extends JFrame {
     IntroWindow introWindow = new IntroWindow();
     EscapeKeyAdapter escapeKeyAdapter = new EscapeKeyAdapter();
     SelectingGame selectingGame = new SelectingGame();
-    Chess chess;
+    RunMyAINotWorking runMyAINotWorking;
+    StockFishPanel stockfish;
     ServerPanel server;
     ClientPanel clientPanel;
 
@@ -64,5 +67,6 @@ public class GameWindow extends JFrame {
         introWindow.playButton.addActionListener(e -> switchToPanel(selectingGame));
         selectingGame.localHostButton.addActionListener(e -> switchToPanel(server = new ServerPanel(width, height)));
         selectingGame.localJoinButton.addActionListener(e -> switchToPanel(clientPanel = new ClientPanel(width, height)));
+        selectingGame.stockfishButton.addActionListener(e -> switchToPanel(stockfish = new StockFishPanel(width, height)));
     }
 }

@@ -9,7 +9,7 @@ import java.io.IOException;
 
 
 public class SelectingGame extends JPanel {
-    JButton localHostButton, localJoinButton;
+    JButton localHostButton, localJoinButton, myAIButton,stockfishButton;
     private BufferedImage backgroundImage;
 
     public SelectingGame() {
@@ -23,6 +23,11 @@ public class SelectingGame extends JPanel {
         add(localHostButton, BorderLayout.CENTER);
         localJoinButton = new JButton("Local join");
         add(localJoinButton, BorderLayout.SOUTH);
+        myAIButton = new JButton("My AI");
+        add(myAIButton, BorderLayout.NORTH);
+        stockfishButton = new JButton("Stockfish");
+        add(stockfishButton, BorderLayout.WEST);
+
     }
     @Override
     protected void paintComponent(Graphics g) {

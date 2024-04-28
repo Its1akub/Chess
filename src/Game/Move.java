@@ -6,16 +6,21 @@ import Other.Coordinates;
 import java.io.Serializable;
 
 public class Move implements Serializable {
-    private final int previousCX,previousCY, currentCX, currentCY;
+    private final int previousCX, previousCY;
+    private int currentCX, currentCY;
     private Piece piece;
 
-    public Move(int cX, int cY, Piece piece) {
-        this.previousCX = cX;
-        this.previousCY = cY;
+    public Move(int pCX, int pCY, Piece piece,int cCX,int cCY) {
+        this.previousCX = pCX;
+        this.previousCY = pCY;
+        this.currentCX = cCX;
+        this.currentCY = cCY;
         this.piece = piece;
-        Coordinates current = flipCoordinates(cX, cY);
-        this.currentCX = current.getX();
-        this.currentCY = current.getY();
+    }
+    public void rotateCoordinates() {
+        Coordinates current = flipCoordinates(previousCX, previousCY);
+        currentCX = current.getX();
+        currentCY = current.getY();
         piece.setcX(currentCX);
         piece.setcY(currentCY);
     }

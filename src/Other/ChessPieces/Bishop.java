@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import static Game.Mechanics.possMoveToKill;
 
 public class Bishop extends Piece {
-    private String path;
 
     public Bishop(int x, int y, boolean isWhite) {
         super(x, y, isWhite, PieceType.BISHOP);
@@ -16,65 +15,23 @@ public class Bishop extends Piece {
     @Override
     public ArrayList<Coordinates> allowedMovements(String[][] board, boolean isWhite) {
         ArrayList<Coordinates> possibleMovements = new ArrayList<>();
+        int[][] directions = {{-1, -1}, {-1, 1}, {1, 1}, {1, -1}};
 
-        int lUX, LUY, rUX, rUY, lDX, lDY, rDX, rDY;
+        for (int[] dir : directions) {
+            int dx = dir[0], dy = dir[1];
+            for (int i = 1; i < 8; i++) {
+                int newX = getcX() + i * dx;
+                int newY = getcY() + i * dy;
 
-        //left up
-        for (int i = 1; i < 8; i++) {
-            if (getcX() - i >= 0 && getcY() - i >= 0) {
-                lUX = getcX() - i;
-                LUY = getcY() - i;
-                if (board[LUY][lUX] == null) {
-                    possibleMovements.add(new Coordinates(lUX, LUY));
-                } else if (possMoveToKill(board, lUX, LUY, isWhite)) {
-                    possibleMovements.add(new Coordinates(lUX, LUY));
-                    break;
-                } else {
-                    break;
-                }
-            }
-        }
-        //left down
-        for (int i = 1; i < 8; i++) {
-            if (getcX() - i >= 0 && getcY() + i < 8) {
-                lDX = getcX() - i;
-                lDY = getcY() + i;
-                if (board[lDY][lDX] == null) {
-                    possibleMovements.add(new Coordinates(lDX, lDY));
-                } else if (possMoveToKill(board, lDX, lDY, isWhite)) {
-                    possibleMovements.add(new Coordinates(lDX, lDY));
-                    break;
-                } else {
-                    break;
-                }
-            }
-        }
-        //right down
-        for (int i = 1; i < 8; i++) {
-            if (getcX() + i < 8 && getcY() + i < 8) {
-                rDX = getcX() + i;
-                rDY = getcY() + i;
-                if (board[rDY][rDX] == null) {
-                    possibleMovements.add(new Coordinates(rDX, rDY));
-                } else if (possMoveToKill(board, rDX, rDY, isWhite)) {
-                    possibleMovements.add(new Coordinates(rDX, rDY));
-                    break;
-                } else {
-                    break;
-                }
-            }
-        }
-
-        //right up
-        for (int i = 1; i < 8; i++) {
-            if (getcX() + i < 8 && getcY() - i >= 0) {
-                rUX = getcX() + i;
-                rUY = getcY() - i;
-                if (board[rUY][rUX] == null) {
-                    possibleMovements.add(new Coordinates(rUX, rUY));
-                } else if (possMoveToKill(board, rUX, rUY, isWhite)) {
-                    possibleMovements.add(new Coordinates(rUX, rUY));
-                    break;
+                if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) {
+                    if (board[newY][newX] == null) {
+                        possibleMovements.add(new Coordinates(newX, newY));
+                    } else if (possMoveToKill(board, newX, newY, isWhite)) {
+                        possibleMovements.add(new Coordinates(newX, newY));
+                        break;
+                    } else {
+                        break;
+                    }
                 } else {
                     break;
                 }
@@ -82,4 +39,5 @@ public class Bishop extends Piece {
         }
         return possibleMovements;
     }
+
 }

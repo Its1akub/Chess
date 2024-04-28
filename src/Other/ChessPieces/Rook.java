@@ -15,63 +15,28 @@ public class Rook extends Piece{
     public ArrayList<Coordinates> allowedMovements(String[][] board, boolean isWhite) {
         ArrayList<Coordinates> possibleMovements = new ArrayList<>();
 
-        int UP, LEFT, DOWN, RIGHT;
+        int[][] directions = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
 
-        //up
-        UP = getcY() - 1;
-        while (UP >= 0) {
-            if (board[UP][getcX()] == null) {
-                possibleMovements.add(new Coordinates(getcX(), UP));
-            } else if (possMoveToKill(board, getcX(), UP, isWhite)) {
-                possibleMovements.add(new Coordinates(getcX(), UP));
-                break;
-            } else {
-                break;
+        for (int[] dir : directions) {
+            int dx = dir[0];
+            int dy = dir[1];
+            int newX = getcX() + dx;
+            int newY = getcY() + dy;
+
+            while (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) {
+                if (board[newY][newX] == null) {
+                    possibleMovements.add(new Coordinates(newX, newY));
+                } else if (possMoveToKill(board, newX, newY, isWhite)) {
+                    possibleMovements.add(new Coordinates(newX, newY));
+                    break;
+                } else {
+                    break;
+                }
+                newX += dx;
+                newY += dy;
             }
-            UP--;
         }
 
-        //left
-        LEFT = getcX() - 1;
-        while (LEFT >= 0) {
-            if (board[getcY()][LEFT] == null) {
-                possibleMovements.add(new Coordinates(LEFT, getcY()));
-            } else if (possMoveToKill(board, LEFT, getcY(), isWhite)) {
-                possibleMovements.add(new Coordinates(LEFT, getcY()));
-                break;
-            } else {
-                break;
-            }
-            LEFT--;
-        }
-
-        //down
-        DOWN = getcY() + 1;
-        while (DOWN < 8) {
-            if (board[DOWN][getcX()] == null) {
-                possibleMovements.add(new Coordinates(getcX(), DOWN));
-            } else if (possMoveToKill(board, getcX(), DOWN, isWhite)) {
-                possibleMovements.add(new Coordinates(getcX(), DOWN));
-                break;
-            } else {
-                break;
-            }
-            DOWN++;
-        }
-
-        //right
-        RIGHT = getcX() + 1;
-        while (RIGHT < 8) {
-            if (board[getcY()][RIGHT] == null) {
-                possibleMovements.add(new Coordinates(RIGHT, getcY()));
-            } else if (possMoveToKill(board, RIGHT, getcY(), isWhite)) {
-                possibleMovements.add(new Coordinates(RIGHT, getcY()));
-                break;
-            } else {
-                break;
-            }
-            RIGHT++;
-        }
         return possibleMovements;
     }
 }

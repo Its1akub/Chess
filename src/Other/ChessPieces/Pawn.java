@@ -8,6 +8,8 @@ import static Game.Mechanics.possMoveToKill;
 
 public class Pawn extends Piece {
     private boolean firstMove = true;
+    private boolean moveBy2 = false;
+    private ArrayList<Piece> pieces;
 
     public Pawn(int x, int y, boolean isWhite) {
         super(x, y, isWhite, PieceType.PAWN);
@@ -21,25 +23,29 @@ public class Pawn extends Piece {
             possibleMovements.add(new Coordinates(getcX(), getcY() - 2));
         }
 
-        if (getcY() > 0 && board[getcY() - 1][getcX()] == null) {
-            possibleMovements.add(new Coordinates(getcX(), getcY() - 1));
-        }
-        if (isWhite) {
-            if (getcX() > 0 && getcY() > 0 && board[getcY() - 1][getcX() - 1] != null && possMoveToKill(board, getcX() - 1, getcY() - 1, true)) {
+            if (getcY() > 0 && board[getcY() - 1][getcX()] == null) {
+                possibleMovements.add(new Coordinates(getcX(), getcY() - 1));
+            }
+            if (getcX() > 0 && getcY() > 0 && board[getcY() - 1][getcX() - 1] != null && possMoveToKill(board, getcX() - 1, getcY() - 1, isWhite)) {
                 possibleMovements.add(new Coordinates(getcX() - 1, getcY() - 1));
             }
-            if (getcX() < 7 && getcY() > 0 && board[getcY() - 1][getcX() + 1] != null && possMoveToKill(board, getcX() + 1, getcY() - 1, true)) {
+            if (getcX() < 7 && getcY() > 0 && board[getcY() - 1][getcX() + 1] != null && possMoveToKill(board, getcX() + 1, getcY() - 1, isWhite)) {
                 possibleMovements.add(new Coordinates(getcX() + 1, getcY() - 1));
+            }
+            // En passant
+            for (Piece p : pieces) {
+                if (p.isWhite() != isWhite && p instanceof Pawn && ((Pawn) p).isMoveBy2()) {
+                    if (getcX() < 7 && p.getcX() + 1 == getcX() && p.getcY() == getcY()) {
+                        possibleMovements.add(new Coordinates(getcX() - 1, getcY() - 1));
+                    }
+                    if (getcX() > 0 && p.getcX() - 1 == getcX() && p.getcY() == getcY()) {
+                        possibleMovements.add(new Coordinates(getcX() + 1, getcY() - 1));
+                    }
+                }
             }
 
-        } else {
-            if (getcX() > 0 && getcY() > 0 && board[getcY() - 1][getcX() - 1] != null && possMoveToKill(board, getcX() - 1, getcY() - 1, false)) {
-                possibleMovements.add(new Coordinates(getcX() - 1, getcY() - 1));
-            }
-            if (getcX() < 7 && getcY() > 0 && board[getcY() - 1][getcX() + 1] != null && possMoveToKill(board, getcX() + 1, getcY() - 1, false)) {
-                possibleMovements.add(new Coordinates(getcX() + 1, getcY() - 1));
-            }
-        }
+
+
         return possibleMovements;
     }
 
@@ -50,11 +56,16 @@ public class Pawn extends Piece {
     public void setFirstMove(boolean firstMove) {
         this.firstMove = firstMove;
     }
-    /*@Override
-    public void move(int x, int y) {
-        super.move(x, y);
-        if (firstMove) {
-            firstMove = false;
-        }
-    }*/
+
+    public void setPieces(ArrayList<Piece> pieces) {
+        this.pieces = pieces;
+    }
+
+    public boolean isMoveBy2() {
+        return moveBy2;
+    }
+
+    public void setMoveBy2(boolean moveBy2) {
+        this.moveBy2 = moveBy2;
+    }
 }

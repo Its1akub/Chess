@@ -174,6 +174,14 @@ public class Mechanics {
         }
     }
 
+    /**
+     * Checks if the player has made any moves on the board.
+     *
+     * @param  board   the current state of the board
+     * @param  previous the previous state of the board
+     * @param  isWhite  whether the player is white or not
+     * @return          true if the player has made any moves, false otherwise
+     */
     public static boolean checkForPlayerMoves(String[][] board, String[][] previous, boolean isWhite) {
         ArrayList<PositionOnBoard> positions = new ArrayList<>();
         ArrayList<PositionOnBoard> previousPositions = new ArrayList<>();

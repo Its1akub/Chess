@@ -9,8 +9,10 @@ import java.awt.event.MouseEvent;
 
 public class Chess extends JPanel {
     public static StopMenu stopMenu;
+    private MovePanel movePanel;
     public static boolean stopMenuShown = false;
     private ChessBoard chessBoard;
+
     private Player p1;
     private Player p2;
 
@@ -29,11 +31,16 @@ public class Chess extends JPanel {
             @Override public void mouseEntered(MouseEvent e) {}
             @Override public void mouseExited(MouseEvent e) {}
         };
+        movePanel = new MovePanel();
         add(chessBoard,BorderLayout.CENTER);
-
+        add(movePanel,BorderLayout.EAST);
 
     }
     public ChessBoard getChessBoard() {
         return chessBoard;
+    }
+
+    public MovePanel getMovePanel() {
+        return movePanel;
     }
 }

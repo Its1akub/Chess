@@ -5,6 +5,11 @@ import java.io.File;
 import java.io.IOException;
 
 public class AudioMethod {
+    /**
+     * Plays an audio file for a chess game.
+     *
+     * @param  path  the path to the audio file
+     */
     public static void audioForChess(String path) {
         try {
             File audioGameStart = new File(path);

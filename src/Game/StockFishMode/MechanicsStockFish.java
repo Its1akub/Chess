@@ -6,6 +6,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class MechanicsStockFish {
+    /**
+     * Converts a chess board representation to the Forsyth-Edwards Notation (FEN) string.
+     *
+     * @param  board            the chess board represented as a 2D array of strings
+     * @param  colorMove        the color of the side to move ("w" for white, "b" for black)
+     * @param  castlingRights   the castling rights of the current position (e.g. "KQkq")
+     * @param  enPassantSquare  the en passant square (e.g. "e3")
+     * @param  halfMoveClock    the halfmove clock (number of halfmoves since the last capture or pawn advance)
+     * @param  fullMoveNumber   the fullmove number (number of the full move)
+     * @return                  the FEN string representation of the chess board
+     */
     public static String boardToFEN(String[][] board, String colorMove, String castlingRights, String enPassantSquare, int halfMoveClock, int fullMoveNumber) {
         StringBuilder fen = new StringBuilder();
         board = convertBoardtoBoardFEN(board);
@@ -38,6 +49,14 @@ public class MechanicsStockFish {
         return fen.toString();
     }
 
+    /**
+     * Converts a Stockfish move to a board representation and updates the pieces accordingly.
+     *
+     * @param  move             the Stockfish move to be converted
+     * @param  pieces            the list of pieces on the board
+     * @param  isWhite           indicates whether the current player is white
+     * @return                   the updated list of pieces on the board
+     */
     public static ArrayList<Piece> stockfishMoveToBoard(String move, ArrayList<Piece> pieces,boolean isWhite) {
         if (!isWhite) move = rotateMove(move);
         ArrayList<Piece> piecesToRemove = new ArrayList<>();
@@ -107,7 +126,12 @@ public class MechanicsStockFish {
         pieces.removeAll(piecesToRemove);
         return pieces;
     }
-
+    /**
+     * Converts a chess board representation to the Forsyth-Edwards Notation (FEN) board.
+     *
+     * @param  board   the chess board represented as a 2D array of strings
+     * @return         the FEN board representation of the chess board
+     */
     public static String[][] convertBoardtoBoardFEN(String[][] board) {
         String[][] boardFEN = new String[8][8];
         for (int row = 0; row < board.length; row++) {
@@ -126,7 +150,12 @@ public class MechanicsStockFish {
         }
         return boardFEN;
     }
-
+    /**
+     * Rotates a chessboard 180 degrees clockwise.
+     *
+     * @param  chessboard  the original chessboard represented as a 2D array of strings
+     * @return             the rotated chessboard represented as a 2D array of strings
+     */
     public static String[][] rotateChessboard180(String[][] chessboard) {
         int n = chessboard.length;
         String[][] rotatedChessboard = new String[n][n];
@@ -137,7 +166,12 @@ public class MechanicsStockFish {
         }
         return rotatedChessboard;
     }
-
+    /**
+     * Rotates a chess move by 180 degrees.
+     *
+     * @param  move  the chess move to be rotated
+     * @return       the rotated chess move
+     */
     private static String rotateMove(String move) {
 
         String previousPosition = move.substring(0, 2);
@@ -175,6 +209,13 @@ public class MechanicsStockFish {
         StringBuilder sb = new StringBuilder();
         return sb.append(pPX).append(pPY).append(cPX).append(cPY).append(promotion).toString();
     }
+    /**
+     * Checks if the half move clock is different between the current and previous piece lists.
+     *
+     * @param  pieces   the current list of pieces
+     * @param  previous the previous list of pieces
+     * @return          true if the half move clock is different, false otherwise
+     */
     public static boolean checkHalfMoveClock(ArrayList<Piece> pieces,ArrayList<Piece> previous) {
         int pawnCountCurrent = 0;
         int pawnCountPrevious = 0;

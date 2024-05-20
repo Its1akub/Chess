@@ -6,12 +6,12 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 
 
-public abstract class Piece{
-
+public abstract class Piece implements Serializable {
 
     private int x;
     private int y;
@@ -19,7 +19,7 @@ public abstract class Piece{
     private int cY;
     private boolean isWhite;
     private PieceType type;
-    private BufferedImage image;
+    private transient BufferedImage image;
     private boolean hovering = false;
 
     public Piece(int cX, int cY, boolean isWhite, PieceType type) {

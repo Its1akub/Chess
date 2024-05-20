@@ -35,10 +35,11 @@ public class Pawn extends Piece {
             // En passant
             for (Piece p : pieces) {
                 if (p.isWhite() != isWhite && p instanceof Pawn && ((Pawn) p).isMoveBy2()) {
-                    if (getcX() < 7 && p.getcX() + 1 == getcX() && p.getcY() == getcY()) {
+                    char c = isWhite ? 'b' : 'w';
+                    if (getcY()==3 && getcX() < 7 && p.getcX() + 1 == getcX() && p.getcY() == getcY() && board[getY()][getX()+1].toCharArray()[1] != c) {
                         possibleMovements.add(new Coordinates(getcX() - 1, getcY() - 1));
                     }
-                    if (getcX() > 0 && p.getcX() - 1 == getcX() && p.getcY() == getcY()) {
+                    if (getcY()==3 && getcX() > 0 && p.getcX() - 1 == getcX() && p.getcY() == getcY() && board[getY()][getX()-1].toCharArray()[1] != c) {
                         possibleMovements.add(new Coordinates(getcX() + 1, getcY() - 1));
                     }
                 }

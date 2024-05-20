@@ -40,7 +40,7 @@ public class StockFishPanel extends JPanel {
         backgroundThread.interrupt();
 
 
-        StockFishRunnable runnable = new StockFishRunnable(chess, x.get());
+        StockFishRunnable runnable = new StockFishRunnable(chess, x.get(),width,height);
         Thread thread1 = new Thread(runnable);
         thread1.start();
     }

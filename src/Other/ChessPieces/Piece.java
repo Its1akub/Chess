@@ -99,6 +99,11 @@ public abstract class Piece implements Serializable {
         }
     }
 
+    /**
+     * Computes the image path for the piece based on its color and type.
+     *
+     * @return The image path for the piece.
+     */
     private String computeImagePath() {
         String colorSuffix = isWhite ? "w" : "b";
         String typePrefix;
@@ -110,6 +115,13 @@ public abstract class Piece implements Serializable {
         return "src/main/resources/" + typePrefix + colorSuffix + ".png";
     }
 
+    /**
+     * Calculates the allowed movements for the piece on the given board for the specified color.
+     *
+     * @param  board   the chess board represented as a 2D array of strings
+     * @param  isWhite a boolean indicating whether the piece is white or black
+     * @return         an ArrayList of Coordinates representing the allowed movements for the piece
+     */
     public abstract ArrayList<Coordinates> allowedMovements(String[][] board, boolean isWhite);
 }
 

@@ -6,6 +6,13 @@ import Other.Coordinates;
 import java.util.ArrayList;
 
 public class MechanicsForBoard {
+    /**
+     * Converts a Stockfish move string to a Move object.
+     *
+     * @param  move    the Stockfish move string
+     * @param  isWhite true if the move is for the white player, false otherwise
+     * @return         the corresponding Move object
+     */
     public static Move stockfishMove(String move, boolean isWhite) {
         if (!isWhite) move = rotate(move);
         String previousPosition = move.substring(0, 2);
@@ -44,6 +51,12 @@ public class MechanicsForBoard {
         return new Move(pPX, pPY, null, cPX, cPY);
     }
 
+    /**
+     * Rotates a move string by 180 degrees.
+     *
+     * @param  move    the move string to be rotated
+     * @return         the rotated move string
+     */
     public static String rotate(String move) {
         String previousPosition = move.substring(0, 2);
         String currentPosition = move.substring(2, 4);
@@ -75,6 +88,15 @@ public class MechanicsForBoard {
         return sb.append(pPX).append(pPY).append(cPX).append(cPY).toString();
     }
 
+    /**
+     * Converts a Move object to a string representation of the move.
+     *
+     * @param  move    the Move object to be converted
+     * @return         the string representation of the move in the format "pPXpPYcPXcPY",
+     *                 where pPX and cPX are the previous and current x-coordinates of the move
+     *                 respectively, and pPY and cPY are the previous and current y-coordinates of the move
+     *                 respectively
+     */
     public static String convertMoveToString(Move move) {
         StringBuilder sb = new StringBuilder();
         String pPX = switch (move.getPreviousCX()) {
@@ -102,6 +124,18 @@ public class MechanicsForBoard {
         return sb.append(pPX).append(8 - move.getPreviousCY()).append(cPX).append(8 - move.getCurrentCY()).toString();
     }
 
+    /**
+     * Performs castling on the board based on the given parameters.
+     *
+     * @param  pieces       the list of pieces on the board
+     * @param  xMoveBy      the x-coordinate movement
+     * @param  yMoveBy      the y-coordinate movement
+     * @param  move         the move object representing the castling move
+     * @param  isWhite      a boolean indicating if the player is white
+     * @param  board        the board representation as a 2D array of strings
+     * @param  player       a boolean indicating if the player is the active player
+     * @return              the updated list of pieces on the board after castling
+     */
     public static ArrayList<Piece> castling(ArrayList<Piece> pieces, int xMoveBy, int yMoveBy, Move move, boolean isWhite, String[][] board, boolean player) {
         ArrayList<Coordinates> coordinates = new ArrayList<>();
 

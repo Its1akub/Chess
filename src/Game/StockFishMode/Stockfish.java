@@ -13,7 +13,12 @@ public class Stockfish implements Runnable {
     Process process;
     private boolean waitForReady;
 
-
+    /**
+     * Executes the Stockfish engine by running the specified executable file.
+     * Sends the "uci" and "isready" commands to initialize the engine and wait for it to be ready.
+     *
+     * @throws RuntimeException if there is an error executing the process
+     */
     public void run() {
         try {
             process = Runtime.getRuntime().exec("src/main/resources/stockfish/stockfish-windows-x86-64-avx2.exe");
@@ -32,7 +37,13 @@ public class Stockfish implements Runnable {
         //sendCommand(reader, "quit",process);
     }
 
-
+    /**
+     * Sends a command to the process using the specified BufferedReader and Process.
+     *
+     * @param  reader   the BufferedReader used to read the output from the process
+     * @param  command  the command to send to the process
+     * @param  process  the Process to send the command to
+     */
     private static void sendCommand(BufferedReader reader, String command, Process process) {
         try {
             reader.readLine(); // Clear buffer
@@ -44,7 +55,13 @@ public class Stockfish implements Runnable {
             e.printStackTrace();
         }
     }
-
+    /**
+     * Retrieves the best move from the Stockfish engine for a given FEN (Forsyth-Edwards Notation) and search depth.
+     *
+     * @param  fen      the FEN string representing the current state of the chess board
+     * @param  level    the search depth to determine the best move
+     * @return          the best move in coordinate notation (e.g., "e2e4")
+     */
     public String bestMove(String fen, int level) {
         String output = "";
         try {
@@ -77,7 +94,11 @@ public class Stockfish implements Runnable {
         return output;
     }
 
-
+    /**
+     * Returns the value of the waitForReady flag.
+     *
+     * @return true if the engine is waiting for the "isready" command to be sent, false otherwise.
+     */
     public boolean isWaitForReady() {
         return waitForReady;
     }

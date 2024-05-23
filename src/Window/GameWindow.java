@@ -17,8 +17,8 @@ public class GameWindow extends JFrame {
     IntroWindow introWindow = new IntroWindow();
     EscapeKeyAdapter escapeKeyAdapter = new EscapeKeyAdapter();
     SelectingGame selectingGame = new SelectingGame();
-    RunMyAINotWorking runMyAINotWorking;
-    MyAIPanel m;
+    //RunMyAINotWorking runMyAINotWorking;
+    //MyAIPanel m;
     StockFishPanel stockfish;
     ServerPanel server;
     ClientPanel clientPanel;
@@ -71,6 +71,6 @@ public class GameWindow extends JFrame {
         selectingGame.localHostButton.addActionListener(e -> switchToPanel(server = new ServerPanel(width, height)));
         selectingGame.localJoinButton.addActionListener(e -> switchToPanel(clientPanel = new ClientPanel(width, height)));
         selectingGame.stockfishButton.addActionListener(e -> switchToPanel(stockfish = new StockFishPanel(width, height)));
-        selectingGame.myAIButton.addActionListener(e -> switchToPanel(m = new MyAIPanel(width, height)));
+        //selectingGame.myAIButton.addActionListener(e -> switchToPanel(m = new MyAIPanel(width, height)));
     }
 }

@@ -1,23 +1,33 @@
 package Game.StockFishMode;
 
-import Game.Chess;
-import Game.Mechanics;
+import Game.*;
+import Other.ChessPieces.King;
 import Other.ChessPieces.Piece;
+import Other.ChessPieces.Rook;
 
 import java.util.ArrayList;
 
+import static Game.MechanicsForBoard.castling;
 import static Other.AudioMethod.audioForChess;
 
 
 public class StockFishRunnable implements Runnable {
     private Chess chess;
     private Stockfish stockfish;
-    private boolean x = true;
+    private boolean x;
+    private int width;
+    private int height;
+    private int xMoveBy;
+    private int yMoveBy;
 
-    public StockFishRunnable(Chess chess, boolean isWhite) {
+    public StockFishRunnable(Chess chess, boolean isWhite, int width, int height) {
         this.chess = chess;
         chess.getChessBoard().setMadeMove(true);
         this.x = isWhite;
+        this.width = width;
+        this.height = height;
+        xMoveBy = (width - 50 * 16) / 2;
+        yMoveBy = (height - 50 * 16) / 2;
     }
 
     @Override
@@ -40,6 +50,12 @@ public class StockFishRunnable implements Runnable {
         int fullMoveClock = 1;
         ArrayList<Piece> currentPieces;
         ArrayList<Piece> previousPieces;
+        int round = 1;
+
+        boolean kingMoves = false;
+        boolean lRookMoves = false;
+        boolean rRookMoves = false;
+
         while (true) {
             previousPieces = chess.getChessBoard().getPieces();
             if (x) {
@@ -51,17 +67,19 @@ public class StockFishRunnable implements Runnable {
                         throw new RuntimeException(ex);
                     }
                 }
+                chess.getMovePanel().setLineNumber(round);
+                chess.getMovePanel().newLine();
+                Move playerMove = chess.getChessBoard().getLastMove();
+                String m = MechanicsForBoard.convertMoveToString(playerMove);
+                String mInNotation = MechanicsForMovePanel.convertNumbersToChessNotation(m, chess.getChessBoard().getPreviousPosition(), chess.getChessBoard().getCurrentPosition(), x);
                 String[][] board = MechanicsStockFish.convertBoardtoBoardFEN(chess.getChessBoard().getBoard());
-                for (String[] strings : board) {
-                    for (String string : strings) {
-                        System.out.print(string + " ");
-                    }
-                    System.out.println();
-                }
+                chess.getMovePanel().addMove(mInNotation);
+                chess.getMovePanel().print();
+
                 currentPieces = chess.getChessBoard().getPieces();
-                if(!MechanicsStockFish.checkHalfMoveClock(currentPieces,previousPieces)){
+                if (!MechanicsStockFish.checkHalfMoveClock(currentPieces, previousPieces)) {
                     halfMoveClock++;
-                }else {
+                } else {
                     halfMoveClock = 0;
                 }
 
@@ -71,21 +89,34 @@ public class StockFishRunnable implements Runnable {
                 int size = chess.getChessBoard().getPieces().size();
                 String move = stockfish.bestMove(fen, 3);
                 if (move.equals("No best move found.")) {
-                    chess.getChessBoard().setMadeMove(false);
+                    chess.getChessBoard().setMadeMove(true);
                     break;
                 }
-                chess.getChessBoard().setPieces(MechanicsStockFish.stockfishMoveToBoard(move, chess.getChessBoard().getPieces(),true));
+                int row =  x ? 8 : 1;
+                boolean movingWithKing = move.charAt(0) == 'e' && Integer.parseInt(move.substring(1,2)) == row;
+                boolean castlingMove = Integer.parseInt(move.substring(1,2)) == Integer.parseInt(move.substring(3,4)) ;
+                board = MechanicsStockFish.convertBoardtoBoardFEN(chess.getChessBoard().getBoard());
+                Move stockfishMove = MechanicsForBoard.stockfishMove(move, x);
+                ArrayList<Piece> rePieces = MechanicsStockFish.stockfishMoveToBoard(move, chess.getChessBoard().getPieces(), true);
+                if (castlingMove && movingWithKing && !kingMoves && !lRookMoves && !rRookMoves) {
+                    rePieces = castling(rePieces, xMoveBy, yMoveBy, stockfishMove, x, board, true);
+                }
+                chess.getChessBoard().setOpponentMove(stockfishMove);
+                chess.getMovePanel().addMove(MechanicsForMovePanel.convertNumbersToChessNotation(move, board, x, true));
+
+                chess.getChessBoard().setPieces(rePieces);
+                board = MechanicsStockFish.convertBoardtoBoardFEN(chess.getChessBoard().getBoard());
 
                 currentPieces = chess.getChessBoard().getPieces();
-                if(!MechanicsStockFish.checkHalfMoveClock(currentPieces,previousPieces)){
+                if (!MechanicsStockFish.checkHalfMoveClock(currentPieces, previousPieces)) {
                     halfMoveClock++;
-                }else {
+                } else {
                     halfMoveClock = 0;
                 }
                 int sizeAfter = chess.getChessBoard().getPieces().size();
-                if (sizeAfter < size){
+                if (sizeAfter < size) {
                     audioForChess("src/main/resources/audio/capture.wav");
-                }else {
+                } else {
                     audioForChess("src/main/resources/audio/move.wav");
                 }
                 for (String[] strings : board) {
@@ -96,6 +127,12 @@ public class StockFishRunnable implements Runnable {
                 }
                 chess.revalidate();
                 chess.repaint();
+
+                if (movingWithKing) kingMoves = true;
+                boolean movingWithLRook = move.charAt(0) == 'a' && Integer.parseInt(move.substring(1,2)) == row;
+                boolean movingWithRRook = move.charAt(0) == 'h' && Integer.parseInt(move.substring(1,2)) == row;
+                if (movingWithLRook)lRookMoves = true;
+                if (movingWithRRook)rRookMoves = true;
 
             } else {
 
@@ -108,29 +145,37 @@ public class StockFishRunnable implements Runnable {
                 int size = chess.getChessBoard().getPieces().size();
                 String move = stockfish.bestMove(fen, 3);
                 if (move.equals("No best move found.")) {
-                    chess.getChessBoard().setMadeMove(false);
+                    chess.getChessBoard().setMadeMove(true);
                     break;
                 }
-                chess.getChessBoard().setPieces(MechanicsStockFish.stockfishMoveToBoard(move, chess.getChessBoard().getPieces(),false));
 
+                int row =  x ? 8 : 1;
+                boolean movingWithKing = move.charAt(0) == 'e' && Integer.parseInt(move.substring(1,2)) == row;
+                boolean castlingMove = Integer.parseInt(move.substring(1,2)) == Integer.parseInt(move.substring(3,4)) ;
+                chess.getMovePanel().setLineNumber(round);
+                chess.getMovePanel().newLine();
+                String[][] board = MechanicsStockFish.convertBoardtoBoardFEN(chess.getChessBoard().getBoard());
+                Move stockfishMove = MechanicsForBoard.stockfishMove(move, x);
+                ArrayList<Piece> rePieces = MechanicsStockFish.stockfishMoveToBoard(move, chess.getChessBoard().getPieces(), false);
+                if (castlingMove && movingWithKing && !kingMoves && !lRookMoves && !rRookMoves) {
+                    rePieces = castling(rePieces, xMoveBy, yMoveBy, stockfishMove, x, board, true);
+                }
+                chess.getChessBoard().setOpponentMove(stockfishMove);
+                chess.getMovePanel().addMove(MechanicsForMovePanel.convertNumbersToChessNotation(move, board, x, true));
+                chess.getChessBoard().setPieces(rePieces);
+                board = MechanicsStockFish.convertBoardtoBoardFEN(chess.getChessBoard().getBoard());
                 currentPieces = chess.getChessBoard().getPieces();
-                if(!MechanicsStockFish.checkHalfMoveClock(currentPieces,previousPieces)){
+                if (!MechanicsStockFish.checkHalfMoveClock(currentPieces, previousPieces)) {
                     halfMoveClock++;
-                }else {
+                } else {
                     halfMoveClock = 0;
                 }
 
                 int sizeAfter = chess.getChessBoard().getPieces().size();
-                if (sizeAfter < size){
+                if (sizeAfter < size) {
                     audioForChess("src/main/resources/audio/capture.wav");
-                }else {
+                } else {
                     audioForChess("src/main/resources/audio/move.wav");
-                } String[][] board = MechanicsStockFish.convertBoardtoBoardFEN(chess.getChessBoard().getBoard());
-                for (String[] strings : board) {
-                    for (String string : strings) {
-                        System.out.print(string + " ");
-                    }
-                    System.out.println();
                 }
                 while (!chess.getChessBoard().isMadeMove()) {
                     try {
@@ -139,6 +184,11 @@ public class StockFishRunnable implements Runnable {
                         throw new RuntimeException(ex);
                     }
                 }
+                Move playerMove = chess.getChessBoard().getLastMove();
+                String m = MechanicsForBoard.convertMoveToString(playerMove);
+                String mInNotation = MechanicsForMovePanel.convertNumbersToChessNotation(m, chess.getChessBoard().getPreviousPosition(), chess.getChessBoard().getCurrentPosition(), x);
+                chess.getMovePanel().addMove(mInNotation);
+                chess.getMovePanel().print();
                 board = MechanicsStockFish.convertBoardtoBoardFEN(chess.getChessBoard().getBoard());
                 for (String[] strings : board) {
                     for (String string : strings) {
@@ -147,13 +197,19 @@ public class StockFishRunnable implements Runnable {
                     System.out.println();
                 }
                 currentPieces = chess.getChessBoard().getPieces();
-                if(!MechanicsStockFish.checkHalfMoveClock(currentPieces,previousPieces)){
+                if (!MechanicsStockFish.checkHalfMoveClock(currentPieces, previousPieces)) {
                     halfMoveClock++;
-                }else {
+                } else {
                     halfMoveClock = 0;
                 }
-            }
 
+                if (movingWithKing) kingMoves = true;
+                boolean movingWithLRook = move.charAt(0) == 'h' && Integer.parseInt(move.substring(1,2)) == row;
+                boolean movingWithRRook = move.charAt(0) == 'a' && Integer.parseInt(move.substring(1,2)) == row;
+                if (movingWithLRook)lRookMoves = true;
+                if (movingWithRRook)rRookMoves = true;
+            }
+            round++;
             fullMoveClock++;
         }
     }

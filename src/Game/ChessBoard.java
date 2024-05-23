@@ -77,7 +77,7 @@ public abstract class ChessBoard extends JPanel implements MouseMotionListener, 
     public void setPieces(ArrayList<Piece> pieces) {
         this.pieces = pieces;
         this.pieces = transformPiecesCo(this.pieces);
-        board = Mechanics.transformBoardToArray(pieces);
+        this.board = Mechanics.transformBoardToArray(this.pieces);
     }
 
     public ArrayList<Piece> getPieces() {

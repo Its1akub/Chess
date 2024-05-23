@@ -5,7 +5,7 @@ import Other.Coordinates;
 
 import java.io.Serializable;
 
-public class Move implements Serializable {
+public class Move implements Serializable{
     private final int previousCX, previousCY;
     private int currentCX, currentCY;
     private Piece piece;
@@ -16,13 +16,6 @@ public class Move implements Serializable {
         this.currentCX = cCX;
         this.currentCY = cCY;
         this.piece = piece;
-    }
-    public void rotateCoordinates() {
-        Coordinates current = flipCoordinates(previousCX, previousCY);
-        currentCX = current.getX();
-        currentCY = current.getY();
-        piece.setcX(currentCX);
-        piece.setcY(currentCY);
     }
 
     public int getCurrentCX() {
@@ -47,10 +40,6 @@ public class Move implements Serializable {
 
     public void setPiece(Piece piece) {
         this.piece = piece;
-    }
-
-    private Coordinates flipCoordinates(int x, int y) {
-        return new Coordinates(7-x, 7-y);
     }
 
     @Override

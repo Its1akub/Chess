@@ -7,8 +7,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.Objects;
 
 
 public abstract class Piece implements Serializable {
@@ -91,9 +93,15 @@ public abstract class Piece implements Serializable {
         this.hovering = hovering;
     }
 
+    /**
+     * Sets the image of the piece based on the given path.
+     *
+     * @param  path  the path to the image file
+     */
     public void setImage(String path) {
         try {
-            image = ImageIO.read(new File(path));
+            URL url = getClass().getClassLoader().getResource(path);
+            image =ImageIO.read(Objects.requireNonNull(url));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -112,7 +120,7 @@ public abstract class Piece implements Serializable {
         }else {
             typePrefix = String.valueOf(type.toString().toLowerCase().toCharArray()[0]);
         }
-        return "src/main/resources/" + typePrefix + colorSuffix + ".png";
+        return typePrefix + colorSuffix + ".png";
     }
 
     /**

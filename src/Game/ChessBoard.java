@@ -1,7 +1,10 @@
 package Game;
 
+import Game.StockFishMode.MechanicsStockFish;
+import Other.AudioMethod;
 import Other.ChessPieces.*;
 import Other.Coordinates;
+import com.github.bhlangonijr.chesslib.Board;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,21 +13,23 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
+import static Game.Check.getValidMoves;
 import static Game.Mechanics.promotion;
 import static Game.Mechanics.removePiece;
 import static Game.MechanicsForBoard.castling;
 import static Game.StockFishMode.MechanicsStockFish.convertBoardtoBoardFEN;
-import static Other.AudioMethod.audioForChess;
 
 public abstract class ChessBoard extends JPanel implements MouseMotionListener, MouseListener {
     private ArrayList<Piece> pieces = new ArrayList<>();
     private final int hitbox = 50;
     private int hoverOverX, hoverOverY;
-    private final int xMoveBy, yMoveBy;
+    private int xMoveBy, yMoveBy;
     private boolean someoneHover = false;
-    private final boolean isWhite;
+    private boolean isWhite;
     private String[][] previousBoard = new String[8][8];
     private String[][] board = new String[8][8];
     private Move lastMove;
@@ -34,6 +39,7 @@ public abstract class ChessBoard extends JPanel implements MouseMotionListener, 
     private boolean kingMoves = false;
     private boolean lRookMoves = false;
     private boolean rRookMoves = false;
+    private AudioMethod audioMethod;
 
 
     public ChessBoard(int width, int height, boolean isWhite) {
@@ -47,7 +53,12 @@ public abstract class ChessBoard extends JPanel implements MouseMotionListener, 
         pieces = transformPiecesCo(pieces);
         this.isWhite = isWhite;
         board = Mechanics.transformBoardToArray(pieces);
-        audioForChess("src/main/resources/audio/gameStart.wav");
+        for (Piece piece : pieces) {
+            boolean direction = piece.isWhite() == isWhite;
+            if (piece instanceof Pawn) ((Pawn) piece).setDirection(direction);
+        }
+        audioMethod = new AudioMethod();
+        audioMethod.audioForChess("audio/gameStart.wav");
     }
 
     public String getCurrentPosition() {
@@ -62,6 +73,18 @@ public abstract class ChessBoard extends JPanel implements MouseMotionListener, 
         return board;
     }
 
+    public int getxMoveBy() {
+        return xMoveBy;
+    }
+
+    public int getyMoveBy() {
+        return yMoveBy;
+    }
+
+    public boolean isWhite() {
+        return isWhite;
+    }
+
     public Move getLastMove() {
         return lastMove;
     }
@@ -74,6 +97,11 @@ public abstract class ChessBoard extends JPanel implements MouseMotionListener, 
         this.madeMove = madeMove;
     }
 
+    /**
+     * Sets the pieces on the chess board and updates the board array.
+     *
+     * @param  pieces  the list of pieces to be set on the board
+     */
     public void setPieces(ArrayList<Piece> pieces) {
         this.pieces = pieces;
         this.pieces = transformPiecesCo(this.pieces);
@@ -84,9 +112,6 @@ public abstract class ChessBoard extends JPanel implements MouseMotionListener, 
         return pieces;
     }
 
-    public String[][] getPreviousBoard() {
-        return previousBoard;
-    }
 
     /**
      * A method to convert coordinates to screen position.
@@ -179,8 +204,30 @@ public abstract class ChessBoard extends JPanel implements MouseMotionListener, 
             hoveringPiece.setY(Math.min(hoveringPiece.getY(), hitbox * 16 + yMoveBy - 1));
             hoveringPiece.setX(Math.max(hoveringPiece.getX(), xMoveBy));
             hoveringPiece.setY(Math.max(hoveringPiece.getY(), yMoveBy));
+            Board validMoves = new Board();
+            String colorMove = isWhite ? "w" : "b";
+            String castl;
+            String[][] boardForMoves = new String[8][8];
+            for (int i = 0; i < board.length; i++) {
+                boardForMoves[i] = Arrays.copyOf(board[i], board[i].length);
+            }
+            if (colorMove.equals("w")) {
+                castl = "KQ";
+            }else{
+                castl = "kq";
+                boardForMoves = MechanicsStockFish.rotateChessboard180(boardForMoves);
+            }
+            String castlingRights = (kingMoves || lRookMoves || rRookMoves)? castl : "-";
+            String fen = MechanicsStockFish.boardToFEN(boardForMoves,colorMove,castlingRights, "-",0,1);
+            validMoves.loadFromFen(fen);
+
             if (hoveringPiece instanceof Pawn) ((Pawn) hoveringPiece).setPieces(pieces);
-            for (Coordinates c : hoveringPiece.allowedMovements(board, hoveringPiece.isWhite())) {
+
+            List<com.github.bhlangonijr.chesslib.move.Move> legalMoves = validMoves.legalMoves();
+            //System.out.println("Legal moves: " + legalMoves);
+            ArrayList<Coordinates> coordinates = getValidMoves(legalMoves,hoveringPiece,board, isWhite);
+
+            for (Coordinates c : coordinates) {
                 g.setColor(new Color(250, 218, 94, 75));
                 g.fillRect(c.getX() * hitbox * 2 + xMoveBy, c.getY() * hitbox * 2 + yMoveBy, hitbox * 2, hitbox * 2);
             }
@@ -228,9 +275,12 @@ public abstract class ChessBoard extends JPanel implements MouseMotionListener, 
         this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         ArrayList<Piece> rePieces = pieces;
         boolean playedAudio = false;
+
+        previousBoard = board;
         for (Piece p : pieces) {
             if (p.isHovering()) {
                 boolean movingWithKing = p instanceof King;
+                boolean doesCount = true;
 
                 double tempX = p.getX() - xMoveBy;
                 tempX = Math.floor(tempX / hitbox / 2);
@@ -245,7 +295,29 @@ public abstract class ChessBoard extends JPanel implements MouseMotionListener, 
                 previousPosition = bP[p.getcY()][p.getcX()];
 
                 boolean canMove = false;
-                for (Coordinates c : p.allowedMovements(board, p.isWhite())) {
+
+                Board validMoves = new Board();
+                String colorMove = isWhite ? "w" : "b";
+                String castl;
+                String[][] boardForMoves = new String[8][8];
+                for (int i = 0; i < board.length; i++) {
+                    boardForMoves[i] = Arrays.copyOf(board[i], board[i].length);
+                }
+                if (colorMove.equals("w")) {
+                    castl = "KQ";
+                }else{
+                    castl = "kq";
+                    boardForMoves = MechanicsStockFish.rotateChessboard180(boardForMoves);
+                }
+                String castlingRights = (kingMoves || lRookMoves || rRookMoves)? castl : "-";
+                String fen = MechanicsStockFish.boardToFEN(boardForMoves,colorMove,castlingRights, "-",0,1);
+                validMoves.loadFromFen(fen);
+
+                List<com.github.bhlangonijr.chesslib.move.Move> legalMoves = validMoves.legalMoves();
+                //System.out.println("Legal moves: " + legalMoves);
+                ArrayList<Coordinates> coordinates = getValidMoves(legalMoves,p,board, isWhite);
+
+                for (Coordinates c : coordinates) {
                     if (hitX == c.getX() && hitY == c.getY()) {
                         if (p instanceof Pawn) ((Pawn) p).setMoveBy2(p.getcY() - 2 == c.getY());
                         canMove = true;
@@ -259,7 +331,7 @@ public abstract class ChessBoard extends JPanel implements MouseMotionListener, 
                         Piece piece = iterator.next();
                         if (hitX == piece.getcX() && hitY == piece.getcY()) {
                             iterator = removePiece(pieces, hitX, hitY).iterator();
-                            audioForChess("src/main/resources/audio/capture.wav");
+                            audioMethod.audioForChess("audio/capture.wav");
                             playedAudio = true;
                         }
                         if (p instanceof Pawn && piece instanceof Pawn && ((Pawn) piece).isMoveBy2() && hitX == piece.getcX() && hitY == piece.getcY() - 1)
@@ -288,7 +360,7 @@ public abstract class ChessBoard extends JPanel implements MouseMotionListener, 
                 rePieces = promotion(rePieces, xMoveBy, yMoveBy);
                 if (movingWithKing && !kingMoves && !lRookMoves && !rRookMoves) {
                     Move move = new Move(pCX, pCY, p, p.getcX(), p.getcY());
-                    rePieces = castling(rePieces, xMoveBy, yMoveBy, move, isWhite, board, true);
+                    rePieces = castling(rePieces, xMoveBy, yMoveBy, move, isWhite, board, true, isWhite);
                 }
 
                 board = Mechanics.transformBoardToArray(rePieces);
@@ -296,28 +368,32 @@ public abstract class ChessBoard extends JPanel implements MouseMotionListener, 
                     lastMove = new Move(pCX, pCY, p, p.getcX(), p.getcY());
                     if (p instanceof Pawn) ((Pawn) p).setFirstMove(false);
                     madeMove = true;
-                    if (!playedAudio) audioForChess("src/main/resources/audio/move.wav");
-                } else if (Mechanics.checkForPlayerMoves(board, previousBoard, isWhite)) {
+                    if (!playedAudio) audioMethod.audioForChess("audio/move.wav");
+                }
+                if (Mechanics.checkForPlayerMoves(board, previousBoard, isWhite)) {
                     lastMove = null;
                     madeMove = false;
+                    doesCount = false;
                 }
                 p.setHovering(false);
                 someoneHover = false;
                 opponentMove = null;
 
-                if (p instanceof King) {
+                if (p instanceof King && doesCount) {
                     kingMoves = true;
                 }
-                if (p instanceof Rook) {
+                if (p instanceof Rook && doesCount) {
                     if (p.getcX() == 0) lRookMoves = true;
                     else if (p.getcX() == 7) rRookMoves = true;
                 }
+                repaint();
                 break;
             }
         }
         pieces = rePieces;
-        board = Mechanics.transformBoardToArray(pieces);
+
         previousBoard = board;
+        board = Mechanics.transformBoardToArray(pieces);
         repaint();
     }
 }

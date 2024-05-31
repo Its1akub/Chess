@@ -1,5 +1,6 @@
 package Game.StockFishMode;
 
+import Game.Move;
 import Other.ChessPieces.*;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class MechanicsStockFish {
     public static String boardToFEN(String[][] board, String colorMove, String castlingRights, String enPassantSquare, int halfMoveClock, int fullMoveNumber) {
         StringBuilder fen = new StringBuilder();
         board = convertBoardtoBoardFEN(board);
-        // Translate the board position to FEN string
+
         for (int row = 0; row < 8; row++) {
             int emptyCounter = 0;
             for (int col = 0; col < 8; col++) {
@@ -43,8 +44,8 @@ public class MechanicsStockFish {
             }
         }
 
-        // Add side to move, castling rights, en passant square, halfmove clock, and fullmove number
-        fen.append(" " + colorMove + " " + castlingRights + " " + enPassantSquare + " " + halfMoveClock + " " + fullMoveNumber); // default values for initial position
+
+        fen.append(" " + colorMove + " " + castlingRights + " " + enPassantSquare + " " + halfMoveClock + " " + fullMoveNumber);
 
         return fen.toString();
     }
@@ -230,6 +231,46 @@ public class MechanicsStockFish {
             }
         }
         return (pawnCountCurrent != pawnCountPrevious || pieces.size() != previous.size());
+    }
+
+    /**
+     * Updates the list of pieces on the chessboard to reflect the castling move made by the stockfish.
+     *
+     * @param  pieces    the list of pieces on the chessboard
+     * @param  move      the move made by the player
+     * @param  isWhite   indicates whether the player is white
+     * @return           the updated list of pieces on the chessboard
+     */
+    public static ArrayList<Piece> castlingForStockFish(ArrayList<Piece> pieces, Move move, boolean isWhite) {
+        if (move.getPreviousCX() == 3){
+            if (move.getCurrentCX() == 1&& move.getCurrentCY() == 0){
+                pieces.removeIf(piece -> piece instanceof King && move.getPreviousCX() == piece.getcX() && move.getPreviousCY() == piece.getcY());
+                pieces.removeIf(piece -> piece instanceof Rook && 0 == piece.getcX() && 0 == piece.getcY());
+                pieces.add(new Rook(2, 0, isWhite));
+                pieces.add(new King(1, 0, isWhite));
+            }
+            if (move.getCurrentCX() == 5&& move.getCurrentCY() == 0){
+                pieces.removeIf(piece -> piece instanceof King && move.getPreviousCX() == piece.getcX() && move.getPreviousCY() == piece.getcY());
+                pieces.removeIf(piece -> piece instanceof Rook && 7 == piece.getcX() && 0 == piece.getcY());
+                pieces.add(new Rook(4, 0, isWhite));
+                pieces.add(new King(5, 0, isWhite));
+            }
+        }
+        if (move.getPreviousCX() == 4){
+            if (move.getCurrentCX() == 6&& move.getCurrentCY() == 0){
+                pieces.removeIf(piece -> piece instanceof King && move.getPreviousCX() == piece.getcX() && move.getPreviousCY() == piece.getcY());
+                pieces.removeIf(piece -> piece instanceof Rook && 7 == piece.getcX() && 0 == piece.getcY());
+                pieces.add(new Rook(5, 0, isWhite));
+                pieces.add(new King(6, 0, isWhite));
+            }
+            if (move.getCurrentCX() == 2&& move.getCurrentCY() == 0){
+                pieces.removeIf(piece -> piece instanceof King && move.getPreviousCX() == piece.getcX() && move.getPreviousCY() == piece.getcY());
+                pieces.removeIf(piece -> piece instanceof Rook && 0 == piece.getcX() && 0 == piece.getcY());
+                pieces.add(new Rook(3, 0, isWhite));
+                pieces.add(new King(2, 0, isWhite));
+            }
+        }
+        return pieces;
     }
 
 

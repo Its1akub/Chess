@@ -12,6 +12,13 @@ public class Bishop extends Piece {
         super(x, y, isWhite, PieceType.BISHOP);
     }
 
+    /**
+     * Calculates the allowed movements for the bishop on the chessboard.
+     *
+     * @param  board       the chessboard represented as a 2D array of strings
+     * @param  isWhite     indicates whether the bishop is white or black
+     * @return             an ArrayList of Coordinates representing the possible movements
+     */
     @Override
     public ArrayList<Coordinates> allowedMovements(String[][] board, boolean isWhite) {
         ArrayList<Coordinates> possibleMovements = new ArrayList<>();

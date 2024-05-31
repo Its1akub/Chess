@@ -11,6 +11,13 @@ public class King extends Piece {
         super(x, y, isWhite, PieceType.KING);
     }
 
+    /**
+     * Returns a list of allowed movements for the King piece on the given board.
+     *
+     * @param  board   the game board represented as a 2D array of strings
+     * @param  isWhite a boolean indicating whether the King is white or black
+     * @return         an ArrayList of Coordinates representing the allowed movements
+     */
     @Override
     public ArrayList<Coordinates> allowedMovements(String[][] board, boolean isWhite) {
         ArrayList<Coordinates> allowedMovements = new ArrayList<>();

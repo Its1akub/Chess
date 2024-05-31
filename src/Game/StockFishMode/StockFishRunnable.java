@@ -1,14 +1,14 @@
 package Game.StockFishMode;
 
 import Game.*;
-import Other.ChessPieces.King;
+import Other.AudioMethod;
 import Other.ChessPieces.Piece;
-import Other.ChessPieces.Rook;
 
 import java.util.ArrayList;
 
+import static Game.Ckeckmate.checkmate;
 import static Game.MechanicsForBoard.castling;
-import static Other.AudioMethod.audioForChess;
+import static Game.StockFishMode.MechanicsStockFish.castlingForStockFish;
 
 
 public class StockFishRunnable implements Runnable {
@@ -19,6 +19,7 @@ public class StockFishRunnable implements Runnable {
     private int height;
     private int xMoveBy;
     private int yMoveBy;
+    private AudioMethod audioMethod;
 
     public StockFishRunnable(Chess chess, boolean isWhite, int width, int height) {
         this.chess = chess;
@@ -28,6 +29,7 @@ public class StockFishRunnable implements Runnable {
         this.height = height;
         xMoveBy = (width - 50 * 16) / 2;
         yMoveBy = (height - 50 * 16) / 2;
+        audioMethod = new AudioMethod();
     }
 
     @Override
@@ -67,12 +69,14 @@ public class StockFishRunnable implements Runnable {
                         throw new RuntimeException(ex);
                     }
                 }
+                String[][] board = MechanicsStockFish.convertBoardtoBoardFEN(chess.getChessBoard().getBoard());
+                //if (checkmate(true, board)) break;
                 chess.getMovePanel().setLineNumber(round);
                 chess.getMovePanel().newLine();
                 Move playerMove = chess.getChessBoard().getLastMove();
                 String m = MechanicsForBoard.convertMoveToString(playerMove);
                 String mInNotation = MechanicsForMovePanel.convertNumbersToChessNotation(m, chess.getChessBoard().getPreviousPosition(), chess.getChessBoard().getCurrentPosition(), x);
-                String[][] board = MechanicsStockFish.convertBoardtoBoardFEN(chess.getChessBoard().getBoard());
+
                 chess.getMovePanel().addMove(mInNotation);
                 chess.getMovePanel().print();
 
@@ -92,6 +96,7 @@ public class StockFishRunnable implements Runnable {
                     chess.getChessBoard().setMadeMove(true);
                     break;
                 }
+                if (checkmate(false, board)) break;
                 int row =  x ? 8 : 1;
                 boolean movingWithKing = move.charAt(0) == 'e' && Integer.parseInt(move.substring(1,2)) == row;
                 boolean castlingMove = Integer.parseInt(move.substring(1,2)) == Integer.parseInt(move.substring(3,4)) ;
@@ -99,7 +104,8 @@ public class StockFishRunnable implements Runnable {
                 Move stockfishMove = MechanicsForBoard.stockfishMove(move, x);
                 ArrayList<Piece> rePieces = MechanicsStockFish.stockfishMoveToBoard(move, chess.getChessBoard().getPieces(), true);
                 if (castlingMove && movingWithKing && !kingMoves && !lRookMoves && !rRookMoves) {
-                    rePieces = castling(rePieces, xMoveBy, yMoveBy, stockfishMove, x, board, true);
+                    rePieces = castlingForStockFish(rePieces, stockfishMove,false);
+                    //rePieces = castling(rePieces, xMoveBy, yMoveBy, stockfishMove, x, board, true,chess.getChessBoard().isWhite());
                 }
                 chess.getChessBoard().setOpponentMove(stockfishMove);
                 chess.getMovePanel().addMove(MechanicsForMovePanel.convertNumbersToChessNotation(move, board, x, true));
@@ -115,9 +121,9 @@ public class StockFishRunnable implements Runnable {
                 }
                 int sizeAfter = chess.getChessBoard().getPieces().size();
                 if (sizeAfter < size) {
-                    audioForChess("src/main/resources/audio/capture.wav");
+                    audioMethod.audioForChess("audio/capture.wav");
                 } else {
-                    audioForChess("src/main/resources/audio/move.wav");
+                    audioMethod.audioForChess("audio/move.wav");
                 }
                 for (String[] strings : board) {
                     for (String string : strings) {
@@ -148,7 +154,7 @@ public class StockFishRunnable implements Runnable {
                     chess.getChessBoard().setMadeMove(true);
                     break;
                 }
-
+                if (checkmate(true, pieces)) break;
                 int row =  x ? 8 : 1;
                 boolean movingWithKing = move.charAt(0) == 'e' && Integer.parseInt(move.substring(1,2)) == row;
                 boolean castlingMove = Integer.parseInt(move.substring(1,2)) == Integer.parseInt(move.substring(3,4)) ;
@@ -158,7 +164,8 @@ public class StockFishRunnable implements Runnable {
                 Move stockfishMove = MechanicsForBoard.stockfishMove(move, x);
                 ArrayList<Piece> rePieces = MechanicsStockFish.stockfishMoveToBoard(move, chess.getChessBoard().getPieces(), false);
                 if (castlingMove && movingWithKing && !kingMoves && !lRookMoves && !rRookMoves) {
-                    rePieces = castling(rePieces, xMoveBy, yMoveBy, stockfishMove, x, board, true);
+                    rePieces = castlingForStockFish(rePieces, stockfishMove,true);
+                    //rePieces = castling(rePieces, xMoveBy, yMoveBy, stockfishMove, x, board, true,chess.getChessBoard().isWhite());
                 }
                 chess.getChessBoard().setOpponentMove(stockfishMove);
                 chess.getMovePanel().addMove(MechanicsForMovePanel.convertNumbersToChessNotation(move, board, x, true));
@@ -173,9 +180,9 @@ public class StockFishRunnable implements Runnable {
 
                 int sizeAfter = chess.getChessBoard().getPieces().size();
                 if (sizeAfter < size) {
-                    audioForChess("src/main/resources/audio/capture.wav");
+                    audioMethod.audioForChess("audio/capture.wav");
                 } else {
-                    audioForChess("src/main/resources/audio/move.wav");
+                    audioMethod.audioForChess("audio/move.wav");
                 }
                 while (!chess.getChessBoard().isMadeMove()) {
                     try {
@@ -184,12 +191,14 @@ public class StockFishRunnable implements Runnable {
                         throw new RuntimeException(ex);
                     }
                 }
+                board = MechanicsStockFish.convertBoardtoBoardFEN(chess.getChessBoard().getBoard());
+                if (checkmate(false, board)) break;
                 Move playerMove = chess.getChessBoard().getLastMove();
                 String m = MechanicsForBoard.convertMoveToString(playerMove);
                 String mInNotation = MechanicsForMovePanel.convertNumbersToChessNotation(m, chess.getChessBoard().getPreviousPosition(), chess.getChessBoard().getCurrentPosition(), x);
                 chess.getMovePanel().addMove(mInNotation);
                 chess.getMovePanel().print();
-                board = MechanicsStockFish.convertBoardtoBoardFEN(chess.getChessBoard().getBoard());
+
                 for (String[] strings : board) {
                     for (String string : strings) {
                         System.out.print(string + " ");

@@ -11,7 +11,7 @@ public class MechanicsForBoard {
      *
      * @param  move    the Stockfish move string
      * @param  isWhite true if the move is for the white player, false otherwise
-     * @return         the corresponding Move object
+     * @return the corresponding Move object
      */
     public static Move stockfishMove(String move, boolean isWhite) {
         if (!isWhite) move = rotate(move);
@@ -55,7 +55,7 @@ public class MechanicsForBoard {
      * Rotates a move string by 180 degrees.
      *
      * @param  move    the move string to be rotated
-     * @return         the rotated move string
+     * @return the rotated move string
      */
     public static String rotate(String move) {
         String previousPosition = move.substring(0, 2);
@@ -92,7 +92,7 @@ public class MechanicsForBoard {
      * Converts a Move object to a string representation of the move.
      *
      * @param  move    the Move object to be converted
-     * @return         the string representation of the move in the format "pPXpPYcPXcPY",
+     * @return the string representation of the move in the format "pPXpPYcPXcPY",
      *                 where pPX and cPX are the previous and current x-coordinates of the move
      *                 respectively, and pPY and cPY are the previous and current y-coordinates of the move
      *                 respectively
@@ -133,10 +133,10 @@ public class MechanicsForBoard {
      * @param  move         the move object representing the castling move
      * @param  isWhite      a boolean indicating if the player is white
      * @param  board        the board representation as a 2D array of strings
-     * @param  player       a boolean indicating if the player is the active player
-     * @return              the updated list of pieces on the board after castling
+     * @param  playerOnBottom       a boolean indicating if the player is the active player
+     * @return the updated list of pieces on the board after castling
      */
-    public static ArrayList<Piece> castling(ArrayList<Piece> pieces, int xMoveBy, int yMoveBy, Move move, boolean isWhite, String[][] board, boolean player) {
+    public static ArrayList<Piece> castling(ArrayList<Piece> pieces, int xMoveBy, int yMoveBy, Move move, boolean isWhite, String[][] board, boolean playerOnBottom, boolean isWhiteOnBottom) {
         ArrayList<Coordinates> coordinates = new ArrayList<>();
 
         for (Piece piece : pieces) {
@@ -153,10 +153,13 @@ public class MechanicsForBoard {
         int indexOfRL = 0;
         int indexOfRR = 0;
         int indexOfK = 0;
-        int y = player ? 7 : 0;
+        int y = playerOnBottom ? 7 : 0;
         int x;
+        boolean color = isWhite == isWhiteOnBottom;
+        //boolean color = ((!isWhite) == isWhiteOnBottom) || (isWhite == (!isWhiteOnBottom));
+        //boolean color = (isWhite == isWhiteOnBottom)||(!isWhite == !isWhiteOnBottom);
 
-        if (isWhite) {
+        if (color) {
             if (move.getPreviousCX() < move.getCurrentCX() && board[y][5] == null && board[y][6] == null)
                 moveToRight = true;
             else if (move.getPreviousCX() > move.getCurrentCX() && board[y][1] == null && board[y][2] == null && board[y][3] == null)
@@ -195,37 +198,52 @@ public class MechanicsForBoard {
         //left
         if (moveToLeft) {
             for (Coordinates coordinate : coordinates) {
-                if (rookLeft.getcY() == coordinate.getY() && rookLeft.getcX() == coordinate.getX() || coordinate.getY() == y && (coordinate.getX() == 1 || coordinate.getX() == 2 || coordinate.getX() == 3)) {
-                    break;
-                } else isCastlingLeft = true;
+                if (isWhite) {
+                    if (rookLeft.getcY() == coordinate.getY() && rookLeft.getcX() == coordinate.getX() || coordinate.getY() == y && (coordinate.getX() == 1 || coordinate.getX() == 2 || coordinate.getX() == 3)) {
+                        break;
+                    } else isCastlingLeft = true;
+                } else {
+                    if (rookLeft.getcY() == coordinate.getY() && rookLeft.getcX() == coordinate.getX() || coordinate.getY() == y && (coordinate.getX() == 1 || coordinate.getX() == 2)) {
+                        break;
+                    } else isCastlingLeft = true;
+                }
+
             }
         }
         //right
         if (moveToRight) {
             for (Coordinates coordinate : coordinates) {
-                if (rookRight.getcY() == coordinate.getY() && rookRight.getcX() == coordinate.getX() || coordinate.getY() == y && (coordinate.getX() == 5 || coordinate.getX() == 6)) {
-                    break;
-                } else isCastlingRight = true;
+                if (isWhite) {
+                    if (rookRight.getcY() == coordinate.getY() && rookRight.getcX() == coordinate.getX() || coordinate.getY() == y && (coordinate.getX() == 5 || coordinate.getX() == 6)) {
+                        break;
+                    } else isCastlingRight = true;
+
+                }else {
+                    if (rookRight.getcY() == coordinate.getY() && rookRight.getcX() == coordinate.getX() || coordinate.getY() == y && (coordinate.getX() == 4 || coordinate.getX() == 5 || coordinate.getX() == 6)) {
+                        break;
+                    } else isCastlingRight = true;
+                }
             }
         }
 
         if (moveToLeft && isCastlingLeft) {
             rookLeft.setcX(x);
             rookLeft.setX((x) * 50 * 2 + xMoveBy + 50);
-            rookLeft.setY(y * 50 * 2 + yMoveBy + 50);
+           rookLeft.setY(y * 50 * 2 + yMoveBy + 50);
             pieces.remove(indexOfRL);
             pieces.add(indexOfRL, rookLeft);
-            king.setcX(x-1);
-            king.setX((x-1) * 50 * 2 + xMoveBy + 50);
+            king.setcX(x - 1);
+            king.setX((x - 1) * 50 * 2 + xMoveBy + 50);
         } else if (moveToRight && isCastlingRight) {
             rookRight.setcX(x);
             rookRight.setX(x * 50 * 2 + xMoveBy + 50);
             rookRight.setY(y * 50 * 2 + yMoveBy + 50);
             pieces.remove(indexOfRR);
             pieces.add(indexOfRR, rookRight);
-            king.setcX(x+1);
-            king.setX((x+1) * 50 * 2 + xMoveBy + 50);
+            king.setcX(x + 1);
+            king.setX((x + 1) * 50 * 2 + xMoveBy + 50);
         }
+
         king.setY(y * 50 * 2 + yMoveBy + 50);
         pieces.remove(indexOfK);
         pieces.add(indexOfK, king);

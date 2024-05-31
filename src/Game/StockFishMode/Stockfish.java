@@ -1,15 +1,10 @@
 package Game.StockFishMode;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 
 
 public class Stockfish implements Runnable {
-    //ProcessBuilder builder;
     BufferedReader reader;
-    //OutputStreamWriter writer;
     Process process;
     private boolean waitForReady;
 
@@ -22,7 +17,6 @@ public class Stockfish implements Runnable {
     public void run() {
         try {
             process = Runtime.getRuntime().exec("src/main/resources/stockfish/stockfish-windows-x86-64-avx2.exe");
-            //process.waitFor();
             if (process != null) {
                 reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 //writer = new OutputStreamWriter(process.getOutputStream());
@@ -78,12 +72,11 @@ public class Stockfish implements Runnable {
                     output = line.split(" ")[1];
                     System.out.println(output);
                     bestMoveFound = true;
-                    break; // Exit the loop once the best move is found
+                    break;
                 }
             }
 
             if (!bestMoveFound) {
-                // Handle case where no best move was found
                 output = "No best move found.";
                 System.out.println(output);
             }

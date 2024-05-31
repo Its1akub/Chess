@@ -2,11 +2,8 @@ package Game;
 
 import Game.StockFishMode.MechanicsStockFish;
 import Other.ChessPieces.*;
-import Other.Users.ColorSide;
 import Other.Users.Player;
-
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 
 import static Other.Users.ColorSide.BLACK;
@@ -148,8 +145,6 @@ public class Mechanics {
         }
         return pieces;
     }
-
-    // public static Piece Castling
 
     /**
      * Adds a new piece to the given list of pieces after a move.

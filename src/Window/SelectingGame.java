@@ -4,8 +4,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 
 public class SelectingGame extends JPanel {
@@ -15,8 +15,11 @@ public class SelectingGame extends JPanel {
     public SelectingGame() {
 
         try {
-            backgroundImage = ImageIO.read(new File("src/main/resources/loading.png"));
-        } catch (IOException e) {
+            backgroundImage = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource("loading.png")));
+            if (backgroundImage == null) {
+                throw new IOException("Failed to read image");
+            }
+        } catch (IllegalArgumentException | IOException e) {
             e.printStackTrace();
         }
         localHostButton = new JButton("Local host");

@@ -8,9 +8,7 @@ import java.awt.event.MouseEvent;
 
 
 public class Chess extends JPanel {
-    public static StopMenu stopMenu;
     private MovePanel movePanel;
-    public static boolean stopMenuShown = false;
     private ChessBoard chessBoard;
 
     private Player p1;
@@ -20,9 +18,6 @@ public class Chess extends JPanel {
     public Chess(int width, int height,boolean isWhite) {
         setPreferredSize(new Dimension(width, height));
         setLayout(new BorderLayout());
-        /*stopMenu = new StopMenu(width, height);
-        stopMenu.setVisible(false);
-        add(stopMenu);*/
 
         chessBoard = new ChessBoard(width, height, isWhite) {
             @Override public void mouseMoved(MouseEvent e) {}

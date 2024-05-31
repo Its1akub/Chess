@@ -11,6 +11,13 @@ public class Queen extends Piece {
         super(x, y, isWhite, PieceType.QUEEN);
     }
 
+    /**
+     * Calculates the allowed movements for the queen chess piece on the given board.
+     *
+     * @param  board    the chess board represented as a 2D array of strings
+     * @param  isWhite  a boolean indicating whether the queen is white or black
+     * @return          an ArrayList of Coordinates representing the allowed movements for the queen
+     */
     @Override
     public ArrayList<Coordinates> allowedMovements(String[][] board, boolean isWhite) {
         ArrayList<Coordinates> possibleMovements = new ArrayList<>();

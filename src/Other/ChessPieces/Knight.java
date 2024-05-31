@@ -11,6 +11,13 @@ public class Knight extends Piece{
         super(x, y, isWhite, PieceType.KNIGHT);
     }
 
+    /**
+     * Returns an ArrayList of Coordinates representing the possible movements of the knight on the given chess board.
+     *
+     * @param  board   the chess board represented as a 2D String array
+     * @param  isWhite a boolean indicating whether the knight is white or black
+     * @return         an ArrayList of Coordinates representing the possible movements of the knight
+     */
     @Override
     public ArrayList<Coordinates> allowedMovements(String[][] board, boolean isWhite) {
         ArrayList<Coordinates> possibleMovements = new ArrayList<>();
